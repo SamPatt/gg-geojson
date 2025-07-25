@@ -222,8 +222,16 @@ function cancelMetaAnalysis() {
     
     // Analyze button is hidden - no need to update text
     
+    // Clear legend
+    if (window.Legend) {
+        window.Legend.clearLegend();
+    }
+    
     // Reset map visualization
     resetMapForMetaAnalysis();
+    
+    // Deselect meta entirely and return to default view
+    clearSelectedMeta();
 }
 
 /**
@@ -243,9 +251,22 @@ function cancelMassEditMode() {
         window.MassEdit.resetMapInteraction();
     }
     
-    // Clear any mass selection styling
-    if (window.MassEdit && typeof window.MassEdit.clearMassSelectionStyling === 'function') {
-        window.MassEdit.clearMassSelectionStyling();
+    // Restore legend colors instead of clearing to gray
+    if (window.GeoMetaApp.geoJsonLayer) {
+        window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+            const originalColor = window.originalColors.get(layer);
+            if (originalColor) {
+                layer.setStyle(originalColor);
+            } else {
+                // Fallback to default gray if no original color stored
+                layer.setStyle({
+                    fillColor: '#95a5a6',
+                    weight: 0.5,
+                    color: '#7f8c8d',
+                    fillOpacity: 0.3
+                });
+            }
+        });
     }
 }
 
