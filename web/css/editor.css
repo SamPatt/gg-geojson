@@ -1,6 +1,8 @@
 /* Editor Panel */
 .editor-panel {
     width: 400px;
+    min-width: 400px;
+    max-width: 400px;
     background: white;
     border-left: 1px solid #ddd;
     display: flex;
@@ -144,6 +146,23 @@ select:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Boolean field styling */
+select[name*="has_official_coverage"] {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-color: #ced4da;
+    font-weight: 500;
+}
+
+select[name*="has_official_coverage"] option[value="true"] {
+    color: #28a745;
+    font-weight: 600;
+}
+
+select[name*="has_official_coverage"] option[value="false"] {
+    color: #dc3545;
+    font-weight: 600;
 }
 
 /* Scale Inputs */
@@ -428,6 +447,19 @@ select:focus {
     box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
 }
 
+/* Number field styling */
+.form-group input[type="number"] {
+    text-align: center;
+    min-width: 80px;
+}
+
+/* Scale field styling */
+.form-group input[type="number"][name*="-min"],
+.form-group input[type="number"][name*="-max"] {
+    width: 60px;
+    min-width: 60px;
+}
+
 /* Selected Meta Display */
 .selected-meta-display {
     display: flex;
@@ -512,6 +544,14 @@ select:focus {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #ecf0f1;
+}
+
+/* Ensure Apply button maintains consistent width */
+#apply-mass-edit {
+    min-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

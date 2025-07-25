@@ -317,13 +317,20 @@ function updateSelectionCount() {
  * Apply mass edit to selected countries
  */
 function applyMassEditToSelected() {
+    console.log('applyMassEditToSelected called');
+    console.log('selectedCountries:', selectedCountries);
+    console.log('currentMassEditField:', currentMassEditField);
+    
     if (selectedCountries.size === 0) {
+        console.log('No countries selected');
         showError('No countries selected');
         return;
     }
     
     const fieldValue = collectMassEditValue();
+    console.log('fieldValue:', fieldValue);
     if (fieldValue === null) {
+        console.log('No field value entered');
         showError('Please enter a value for the selected field');
         return;
     }
@@ -341,15 +348,35 @@ function applyMassEditToSelected() {
         }
     });
     
-    // Update map styling
-    updateMapStyling();
+    // Update map styling to reflect new data
+    if (window.GeoMetaApp && window.GeoMetaApp.updateMapStyling) {
+        window.GeoMetaApp.updateMapStyling();
+    }
     updateCountryCount();
     
-    // Show success message and animation
-    showMassEditSuccess(updatedCount, currentMassEditField);
+    // Deselect all countries after applying changes
+    selectedCountries.clear();
+    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+        const originalColor = window.originalColors.get(layer);
+        if (originalColor) {
+            layer.setStyle(originalColor);
+        } else {
+            layer.setStyle({
+                fillColor: '#95a5a6',
+                weight: 0.5,
+                color: '#7f8c8d',
+                fillOpacity: 0.3
+            });
+        }
+    });
     
-    // Exit mass edit mode
-    cancelMassEditMode();
+    // Update selection count
+    updateSelectionCount();
+    
+    // Show success message on the Apply button
+    showApplyButtonSuccess(updatedCount, currentMassEditField);
+    
+    // Keep user in mass edit mode - don't call cancelMassEditMode()
 }
 
 /**
@@ -357,12 +384,16 @@ function applyMassEditToSelected() {
  */
 function collectMassEditValue() {
     const field = currentMassEditField;
+    console.log('collectMassEditValue called for field:', field);
     
     // Use dynamic field collection if available
     if (window.DynamicMeta) {
         const schema = window.DynamicMeta.getFieldSchema(field);
+        console.log('DynamicMeta schema:', schema);
         if (schema) {
-            return collectDynamicMassEditField(field, schema);
+            const result = collectDynamicMassEditField(field, schema);
+            console.log('Dynamic collection result:', result);
+            return result;
         }
     }
     
@@ -413,31 +444,31 @@ function collectMassEditValue() {
 function collectDynamicMassEditField(field, schema) {
     switch (schema.type) {
         case 'boolean':
-            const booleanSelect = document.querySelector(`select[name="${field}"]`);
+            const booleanSelect = document.querySelector(`select[name="mass-${field}"]`);
             if (booleanSelect && booleanSelect.value !== '') {
                 return booleanSelect.value === 'true';
             }
             return null;
             
         case 'array':
-            const checkboxes = document.querySelectorAll(`input[name="${field}"]:checked`);
+            const checkboxes = document.querySelectorAll(`input[name="mass-${field}"]:checked`);
             const values = Array.from(checkboxes).map(cb => cb.value);
             return values.length > 0 ? values : null;
             
         case 'string':
-            const radios = document.querySelectorAll(`input[name="${field}"]:checked`);
+            const radios = document.querySelectorAll(`input[name="mass-${field}"]:checked`);
             if (radios.length > 0) {
                 return Array.from(radios).map(r => r.value);
             }
-            const select = document.querySelector(`select[name="${field}"]`);
+            const select = document.querySelector(`select[name="mass-${field}"]`);
             if (select && select.value !== '') {
                 return select.value;
             }
             return null;
             
         case 'scale':
-            const minInput = document.querySelector(`input[name="${field}-min"]`);
-            const maxInput = document.querySelector(`input[name="${field}-max"]`);
+            const minInput = document.querySelector(`input[name="mass-${field}-min"]`);
+            const maxInput = document.querySelector(`input[name="mass-${field}-max"]`);
             const min = minInput && minInput.value ? parseInt(minInput.value) : null;
             const max = maxInput && maxInput.value ? parseInt(maxInput.value) : null;
             if (min !== null && max !== null) {
@@ -446,14 +477,14 @@ function collectDynamicMassEditField(field, schema) {
             return null;
             
         case 'number':
-            const numberInput = document.querySelector(`input[name="${field}"]`);
+            const numberInput = document.querySelector(`input[name="mass-${field}"]`);
             if (numberInput && numberInput.value !== '') {
                 return parseInt(numberInput.value);
             }
             return null;
             
         default:
-            const textInput = document.querySelector(`input[name="${field}"]`);
+            const textInput = document.querySelector(`input[name="mass-${field}"]`);
             if (textInput && textInput.value !== '') {
                 return textInput.value;
             }
@@ -464,35 +495,27 @@ function collectDynamicMassEditField(field, schema) {
 /**
  * Show mass edit success animation
  */
-function showMassEditSuccess(count, field) {
-    // Create success notification element
-    const successDiv = document.createElement('div');
-    successDiv.className = 'mass-edit-success';
-    successDiv.innerHTML = `
-        <span class="success-icon">✅</span>
-        <div>Successfully updated ${count} countries!</div>
-        <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem;">
-            Field: ${field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </div>
-    `;
+function showApplyButtonSuccess(count, field) {
+    console.log('showApplyButtonSuccess called with count:', count, 'field:', field);
+    const applyBtn = document.getElementById('apply-mass-edit');
+    console.log('applyBtn found:', !!applyBtn);
+    if (!applyBtn) return;
     
-    // Add to page
-    document.body.appendChild(successDiv);
+    // Store original text
+    const originalText = applyBtn.textContent;
+    const originalBackground = applyBtn.style.background;
     
-    // Show animation
+    // Show success state
+    applyBtn.textContent = `✅ Updated ${count} countries!`;
+    applyBtn.style.background = '#28a745';
+    applyBtn.disabled = true;
+    
+    // Reset after 2 seconds
     setTimeout(() => {
-        successDiv.classList.add('show');
-    }, 100);
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-        successDiv.classList.remove('show');
-        setTimeout(() => {
-            if (successDiv.parentNode) {
-                successDiv.parentNode.removeChild(successDiv);
-            }
-        }, 300);
-    }, 3000);
+        applyBtn.textContent = originalText;
+        applyBtn.style.background = originalBackground;
+        applyBtn.disabled = false;
+    }, 2000);
 }
 
 /**

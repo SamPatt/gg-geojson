@@ -320,18 +320,14 @@ function addEquatorLine() {
         dashArray: '5, 5'
     }).addTo(map);
     
-    // Add label for equator
-    const equatorLabel = L.divIcon({
-        className: 'equator-label',
-        html: '<div style="background: #e74c3c; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;">EQUATOR</div>',
-        iconSize: [60, 20],
-        iconAnchor: [30, 10]
-    });
-    
-    L.marker([0, 0], { icon: equatorLabel }).addTo(map);
-    
     console.log('Equator line added to map');
 }
+
+// Export functions globally
+window.GeoMetaApp = window.GeoMetaApp || {};
+window.GeoMetaApp.updateMapStyling = updateMapStyling;
+window.GeoMetaApp.zoomToCountry = zoomToCountry;
+window.GeoMetaApp.fitAllCountries = fitAllCountries;
 
 // Initialize map when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

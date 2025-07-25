@@ -46,17 +46,9 @@ function discoverMetaFields() {
     console.log('Discovered meta fields:', availableMetaFields);
     console.log('Field schemas:', metaFieldSchemas);
     
-    // Check if we need to use fallback schemas (when all values are null)
-    const needsFallback = availableMetaFields.length > 0 && 
-        availableMetaFields.every(field => {
-            const schema = schemas[field];
-            return schema.type === 'unknown' || schema.possibleValues.length === 0;
-        });
-    
-    if (needsFallback) {
-        console.log('All values are null, using fallback schemas');
-        useFallbackSchemas();
-    }
+    // Always apply fallback schemas for known fields to ensure proper form generation
+    console.log('Applying fallback schemas for known fields');
+    useFallbackSchemas();
     
     // Update UI with discovered fields
     console.log('Updating UI...');
@@ -97,7 +89,7 @@ function useFallbackSchemas() {
             name: 'has_official_coverage',
             displayName: 'Has Official Coverage',
             type: 'boolean',
-            possibleValues: [true, false],
+            possibleValues: ['true', 'false'],
             isBoolean: true
         },
         'arid_lush': {
@@ -144,8 +136,13 @@ function useFallbackSchemas() {
     // Always apply fallback schemas for known fields
     availableMetaFields.forEach(field => {
         if (fallbackSchemas[field]) {
-            metaFieldSchemas[field] = fallbackSchemas[field];
-            console.log('Applied fallback schema for', field, ':', fallbackSchemas[field]);
+            // Merge fallback schema with existing schema data
+            const existingSchema = metaFieldSchemas[field] || {};
+            metaFieldSchemas[field] = {
+                ...existingSchema,
+                ...fallbackSchemas[field]
+            };
+            console.log('Applied fallback schema for', field, ':', metaFieldSchemas[field]);
         }
     });
 }
@@ -348,7 +345,7 @@ function generateFormField(field, schema) {
 }
 
 /**
- * Generate boolean field (checkbox)
+ * Generate boolean field (select dropdown)
  */
 function generateBooleanField(field) {
     return `
@@ -469,7 +466,102 @@ function generateDynamicMassEditField(field) {
     if (!schema) return '';
     
     const container = document.getElementById('mass-edit-field-container');
-    const html = generateFormField(field, schema);
+    
+    // Create a modified schema for mass edit with mass- prefix
+    const massSchema = {
+        ...schema,
+        name: `mass-${field}`
+    };
+    
+    let html = `<div class="form-group">`;
+    html += `<label for="mass-${field}">${schema.displayName}:</label>`;
+    
+    switch (schema.type) {
+        case 'boolean':
+            html += `
+                <select name="mass-${field}">
+                    <option value="">Not Set</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            `;
+            break;
+            
+        case 'array':
+            if (schema.isString) {
+                html += `<div class="checkbox-group">`;
+                schema.possibleValues.forEach(value => {
+                    html += `<label><input type="checkbox" name="mass-${field}" value="${value}"> ${formatValue(value)}</label>`;
+                });
+                html += `</div>`;
+            } else {
+                html += `<div class="radio-group">`;
+                schema.possibleValues.forEach(value => {
+                    html += `<label><input type="radio" name="mass-${field}" value="${value}"> ${formatValue(value)}</label>`;
+                });
+                html += `</div>`;
+            }
+            break;
+            
+        case 'string':
+            if (schema.possibleValues.length <= 5) {
+                html += `<div class="radio-group">`;
+                schema.possibleValues.forEach(value => {
+                    html += `<label><input type="radio" name="mass-${field}" value="${value}"> ${formatValue(value)}</label>`;
+                });
+                html += `</div>`;
+            } else {
+                html += `<select name="mass-${field}">`;
+                html += `<option value="">Not Set</option>`;
+                schema.possibleValues.forEach(value => {
+                    html += `<option value="${value}">${formatValue(value)}</option>`;
+                });
+                html += `</select>`;
+            }
+            break;
+            
+        case 'scale':
+            html += `
+                <div class="scale-inputs">
+                    <input type="number" name="mass-${field}-min" min="${schema.min}" max="${schema.max}" placeholder="Min">
+                    <span>to</span>
+                    <input type="number" name="mass-${field}-max" min="${schema.min}" max="${schema.max}" placeholder="Max">
+                </div>
+            `;
+            break;
+            
+        case 'number':
+            const min = Math.min(...schema.possibleValues);
+            const max = Math.max(...schema.possibleValues);
+            html += `<input type="number" name="mass-${field}" min="${min}" max="${max}">`;
+            break;
+            
+        case 'object':
+            // Special handling for road_lines
+            if (field === 'road_lines') {
+                html += `
+                    <div class="road-lines-section">
+                        <h4>Inner Lines</h4>
+                        <div id="mass-inner-lines-container">
+                            <button type="button" class="add-line-btn" data-type="inner">+ Add Inner Line</button>
+                        </div>
+                        
+                        <h4>Outer Lines</h4>
+                        <div id="mass-outer-lines-container">
+                            <button type="button" class="add-line-btn" data-type="outer">+ Add Outer Line</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `<input type="text" name="mass-${field}">`;
+            }
+            break;
+            
+        default:
+            html += `<input type="text" name="mass-${field}">`;
+    }
+    
+    html += `</div>`;
     container.innerHTML = html;
 }
 

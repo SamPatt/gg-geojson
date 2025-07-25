@@ -56,6 +56,15 @@ function getCategoricalColor(value, fieldName) {
         return '#95a5a6'; // Gray for null values
     }
     
+    // Special handling for boolean fields
+    if (fieldName === 'has_official_coverage') {
+        if (value === true || value === 'true') {
+            return '#28a745'; // Green for true
+        } else if (value === false || value === 'false') {
+            return '#dc3545'; // Red for false
+        }
+    }
+    
     // Create a consistent hash for the field name and value
     const hash = `${fieldName}-${value}`.split('').reduce((a, b) => {
         a = ((a << 5) - a) + b.charCodeAt(0);
@@ -203,7 +212,14 @@ function highlightLegendValue(field, value, type, highlight) {
                 if (Array.isArray(fieldValue)) {
                     shouldHighlight = fieldValue.includes(value);
                 } else {
-                    shouldHighlight = (fieldValue === value);
+                    // Handle boolean values - convert between string and boolean
+                    if (value === 'true') {
+                        shouldHighlight = (fieldValue === true || fieldValue === 'true');
+                    } else if (value === 'false') {
+                        shouldHighlight = (fieldValue === false || fieldValue === 'false');
+                    } else {
+                        shouldHighlight = (fieldValue === value);
+                    }
                 }
             }
         }
@@ -321,7 +337,14 @@ function updateLegendSelection() {
                 if (Array.isArray(fieldValue)) {
                     isSelected = isSelected || fieldValue.includes(selectedValue);
                 } else {
-                    isSelected = isSelected || (fieldValue === selectedValue);
+                    // Handle boolean values - convert between string and boolean
+                    if (selectedValue === 'true') {
+                        isSelected = isSelected || (fieldValue === true || fieldValue === 'true');
+                    } else if (selectedValue === 'false') {
+                        isSelected = isSelected || (fieldValue === false || fieldValue === 'false');
+                    } else {
+                        isSelected = isSelected || (fieldValue === selectedValue);
+                    }
                 }
             }
         });
@@ -472,8 +495,15 @@ function formatValue(value) {
             case 'right': return 'Right';
             case 'maintained': return 'Maintained';
             case 'poor': return 'Poor';
+            case 'true': return 'Yes';
+            case 'false': return 'No';
             default: return value.charAt(0).toUpperCase() + value.slice(1);
         }
+    }
+    
+    // Handle boolean values
+    if (typeof value === 'boolean') {
+        return value ? 'Yes' : 'No';
     }
     
     return value;
