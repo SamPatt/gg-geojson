@@ -11,9 +11,7 @@
           "driving_side": [
             "right"
           ],
-          "hemisphere": [
-            "N"
-          ],
+          "hemisphere": "N",
           "road_lines": {
             "inner": [
               {
@@ -90,9 +88,7 @@
           "driving_side": [
             "right"
           ],
-          "hemisphere": [
-            "N"
-          ],
+          "hemisphere": "N",
           "road_lines": {
             "inner": [
               {
@@ -492,9 +488,7 @@
           "driving_side": [
             "right"
           ],
-          "hemisphere": [
-            "S"
-          ],
+          "hemisphere": "E",
           "road_lines": {
             "inner": [
               {
@@ -839,9 +833,7 @@
           "driving_side": [
             "left"
           ],
-          "hemisphere": [
-            "N"
-          ],
+          "hemisphere": "N",
           "road_lines": {
             "inner": [
               {
@@ -940,9 +932,7 @@
           "driving_side": [
             "right"
           ],
-          "hemisphere": [
-            "N"
-          ],
+          "hemisphere": "N",
           "road_lines": {
             "inner": [
               {

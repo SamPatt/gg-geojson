@@ -57,16 +57,15 @@ function formatGeoMetaData(geoMeta) {
         parts.push(`Driving: ${drivingLabels.join(', ')}`);
     }
     
-    if (geoMeta.hemisphere && geoMeta.hemisphere.length > 0) {
-        const hemisphereLabels = geoMeta.hemisphere.map(h => {
-            switch(h) {
-                case 'N': return 'North';
-                case 'S': return 'South';
-                case 'E': return 'Equator';
-                default: return h;
-            }
-        });
-        parts.push(`Hemisphere: ${hemisphereLabels.join(', ')}`);
+    if (geoMeta.hemisphere && geoMeta.hemisphere !== null) {
+        let hemisphereLabel;
+        switch(geoMeta.hemisphere) {
+            case 'N': hemisphereLabel = 'North'; break;
+            case 'S': hemisphereLabel = 'South'; break;
+            case 'E': hemisphereLabel = 'Equator'; break;
+            default: hemisphereLabel = geoMeta.hemisphere;
+        }
+        parts.push(`Hemisphere: ${hemisphereLabel}`);
     }
     
     if (geoMeta.road_quality && geoMeta.road_quality.length > 0) {
@@ -132,8 +131,8 @@ function validateGeoMeta(geoMeta) {
         errors.push('Driving side must be an array with at least one value');
     }
     
-    if (geoMeta.hemisphere !== null && (!Array.isArray(geoMeta.hemisphere) || geoMeta.hemisphere.length === 0)) {
-        errors.push('Hemisphere must be an array with at least one value');
+    if (geoMeta.hemisphere !== null && typeof geoMeta.hemisphere !== 'string') {
+        errors.push('Hemisphere must be a string value (N, S, or E)');
     }
     
     if (geoMeta.road_quality !== null && (!Array.isArray(geoMeta.road_quality) || geoMeta.road_quality.length === 0)) {

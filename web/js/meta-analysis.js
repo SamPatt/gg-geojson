@@ -305,7 +305,13 @@ function formatMetaValueForDisplay(field, value) {
                     }
                 }).join(',');
             }
-            return value;
+            // Handle string value
+            switch(value) {
+                case 'N': return 'N';
+                case 'S': return 'S';
+                case 'E': return 'E';
+                default: return value;
+            }
             
         case 'road_quality':
             if (Array.isArray(value)) {
@@ -486,7 +492,13 @@ function getFullMetaValue(field, value) {
                     }
                 }).join(', ');
             }
-            return value === 'N' ? 'North' : value === 'S' ? 'South' : 'Equator';
+            // Handle string value
+            switch(value) {
+                case 'N': return 'North';
+                case 'S': return 'South';
+                case 'E': return 'Equator';
+                default: return value;
+            }
             
         case 'road_quality':
             if (Array.isArray(value)) {

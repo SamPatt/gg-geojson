@@ -21,14 +21,10 @@ function validateGeoMetaSchema(geoMeta) {
     
     // Validate hemisphere
     if (geoMeta.hemisphere !== null) {
-        if (!Array.isArray(geoMeta.hemisphere)) {
-            errors.push('hemisphere must be an array or null');
-        } else {
-            geoMeta.hemisphere.forEach(value => {
-                if (!['N', 'S', 'E'].includes(value)) {
-                    errors.push(`Invalid hemisphere value: ${value}`);
-                }
-            });
+        if (typeof geoMeta.hemisphere !== 'string') {
+            errors.push('hemisphere must be a string or null');
+        } else if (!['N', 'S', 'E'].includes(geoMeta.hemisphere)) {
+            errors.push(`Invalid hemisphere value: ${geoMeta.hemisphere}`);
         }
     }
     

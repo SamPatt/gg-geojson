@@ -100,7 +100,7 @@ async function loadSampleFile(filename) {
     try {
         showLoading(true);
         
-        const response = await fetch(`../data/geometa/${filename}`);
+        const response = await fetch(`../data/geometa/${filename}?t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -175,7 +175,7 @@ function initFileHandling() {
     });
     
     // Load sample files on startup
-    loadSampleFile('GG-countries-test.geojson');
+    loadSampleFile('GG-countries-simplified.geojson');
 }
 
 // Initialize when DOM is loaded

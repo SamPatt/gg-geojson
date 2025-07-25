@@ -15,14 +15,9 @@
       "uniqueItems": true
     },
     "hemisphere": {
-      "type": ["array", "null"],
-      "description": "Hemisphere(s) the country is located in",
-      "items": {
-        "type": "string",
-        "enum": ["N", "S", "E"]
-      },
-      "minItems": 1,
-      "uniqueItems": true
+      "type": ["string", "null"],
+      "description": "Hemisphere the country is located in",
+      "enum": ["N", "S", "E"]
     },
     "road_lines": {
       "type": ["object", "null"],

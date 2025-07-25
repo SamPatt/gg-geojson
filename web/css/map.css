@@ -294,4 +294,10 @@
         left: 5px;
         min-width: 120px;
     }
+}
+
+/* Equator label */
+.equator-label {
+    background: transparent !important;
+    border: none !important;
 } 

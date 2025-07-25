@@ -141,10 +141,11 @@ function useFallbackSchemas() {
         }
     };
     
-    // Update schemas with fallback values
+    // Always apply fallback schemas for known fields
     availableMetaFields.forEach(field => {
         if (fallbackSchemas[field]) {
             metaFieldSchemas[field] = fallbackSchemas[field];
+            console.log('Applied fallback schema for', field, ':', fallbackSchemas[field]);
         }
     });
 }
@@ -296,6 +297,7 @@ function updateCountryEditForm() {
  * Generate form field HTML based on field schema
  */
 function generateFormField(field, schema) {
+    console.log('Generating form field for:', field, 'with schema:', schema);
     let html = `<div class="form-group">`;
     html += `<label for="${field}">${schema.displayName}:</label>`;
     
@@ -450,6 +452,10 @@ function generateRoadLinesField(field) {
  */
 function formatValue(value) {
     if (typeof value === 'string') {
+        // Special formatting for hemisphere values
+        if (value === 'N') return 'North';
+        if (value === 'S') return 'South';
+        if (value === 'E') return 'Equator';
         return value.charAt(0).toUpperCase() + value.slice(1);
     }
     return value;
