@@ -29,6 +29,11 @@ function loadGeoJSONFile(file) {
                 // Update UI
                 document.getElementById('current-file').textContent = file.name;
                 
+                // Discover meta fields from loaded data
+                if (window.DynamicMeta) {
+                    window.DynamicMeta.discoverMetaFields();
+                }
+                
                 // Load data onto map
                 loadGeoJSONData(geoJsonData);
                 
@@ -118,6 +123,11 @@ async function loadSampleFile(filename) {
         // Update UI
         document.getElementById('current-file').textContent = filename;
         
+        // Discover meta fields from loaded data
+        if (window.DynamicMeta) {
+            window.DynamicMeta.discoverMetaFields();
+        }
+        
         // Load data onto map
         loadGeoJSONData(geoJsonData);
         
@@ -165,7 +175,7 @@ function initFileHandling() {
     });
     
     // Load sample files on startup
-    loadSampleFile('GG-countries-test-null.geojson');
+    loadSampleFile('GG-countries-test.geojson');
 }
 
 // Initialize when DOM is loaded

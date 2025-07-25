@@ -53,28 +53,102 @@ function populateForm(geoMeta) {
     // Clear existing road lines
     clearRoadLines();
     
-    // Populate radio buttons and checkboxes
-    populateRadioButtons('driving-side', geoMeta.driving_side);
-    populateRadioButtons('hemisphere', geoMeta.hemisphere);
-    populateCheckboxes('road-quality', geoMeta.road_quality);
-    populateCheckboxes('soil-color', geoMeta.soil_color);
-    
-    // Populate select
-    const coverageSelect = form.querySelector('select[name="official-coverage"]');
-    if (geoMeta.has_official_coverage !== null) {
-        coverageSelect.value = geoMeta.has_official_coverage.toString();
+    // Populate fields dynamically based on available meta fields
+    if (window.DynamicMeta) {
+        const availableFields = window.DynamicMeta.getAvailableMetaFields();
+        availableFields.forEach(field => {
+            const value = geoMeta[field];
+            if (value !== undefined) {
+                populateDynamicField(field, value);
+            }
+        });
     } else {
-        coverageSelect.value = '';
+        // Fallback to hardcoded fields
+        populateRadioButtons('driving-side', geoMeta.driving_side);
+        populateRadioButtons('hemisphere', geoMeta.hemisphere);
+        populateCheckboxes('road-quality', geoMeta.road_quality);
+        populateCheckboxes('soil-color', geoMeta.soil_color);
+        
+        // Populate select
+        const coverageSelect = form.querySelector('select[name="official-coverage"]');
+        if (geoMeta.has_official_coverage !== null) {
+            coverageSelect.value = geoMeta.has_official_coverage.toString();
+        } else {
+            coverageSelect.value = '';
+        }
+        
+        // Populate scale inputs
+        populateScaleInputs('arid-lush', geoMeta.arid_lush);
+        populateScaleInputs('cold-hot', geoMeta.cold_hot);
+        populateScaleInputs('flat-mountainous', geoMeta.flat_mountainous);
     }
-    
-    // Populate scale inputs
-    populateScaleInputs('arid-lush', geoMeta.arid_lush);
-    populateScaleInputs('cold-hot', geoMeta.cold_hot);
-    populateScaleInputs('flat-mountainous', geoMeta.flat_mountainous);
     
     // Populate road lines
     if (geoMeta.road_lines) {
         populateRoadLines(geoMeta.road_lines);
+    }
+}
+
+/**
+ * Populate a dynamic field based on its schema
+ */
+function populateDynamicField(field, value) {
+    const schema = window.DynamicMeta.getFieldSchema(field);
+    if (!schema) return;
+    
+    switch (schema.type) {
+        case 'boolean':
+            const booleanSelect = document.querySelector(`select[name="${field}"]`);
+            if (booleanSelect && value !== null) {
+                booleanSelect.value = value.toString();
+            }
+            break;
+            
+        case 'array':
+            if (Array.isArray(value)) {
+                const checkboxes = document.querySelectorAll(`input[name="${field}"]`);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = value.includes(checkbox.value);
+                });
+            }
+            break;
+            
+        case 'string':
+            if (Array.isArray(value)) {
+                // Handle as radio buttons
+                const radios = document.querySelectorAll(`input[name="${field}"]`);
+                radios.forEach(radio => {
+                    radio.checked = value.includes(radio.value);
+                });
+            } else {
+                const select = document.querySelector(`select[name="${field}"]`);
+                if (select && value !== null) {
+                    select.value = value;
+                }
+            }
+            break;
+            
+        case 'scale':
+            if (value && typeof value === 'object' && value.min !== undefined && value.max !== undefined) {
+                const minInput = document.querySelector(`input[name="${field}-min"]`);
+                const maxInput = document.querySelector(`input[name="${field}-max"]`);
+                if (minInput) minInput.value = value.min;
+                if (maxInput) maxInput.value = value.max;
+            }
+            break;
+            
+        case 'number':
+            const numberInput = document.querySelector(`input[name="${field}"]`);
+            if (numberInput && value !== null) {
+                numberInput.value = value;
+            }
+            break;
+            
+        default:
+            const textInput = document.querySelector(`input[name="${field}"]`);
+            if (textInput && value !== null) {
+                textInput.value = value;
+            }
     }
 }
 
@@ -131,10 +205,19 @@ function populateRoadLines(roadLines) {
  * Clear all road lines
  */
 function clearRoadLines() {
-    document.getElementById('inner-lines-container').innerHTML = 
-        '<button type="button" class="add-line-btn" data-type="inner">+ Add Inner Line</button>';
-    document.getElementById('outer-lines-container').innerHTML = 
-        '<button type="button" class="add-line-btn" data-type="outer">+ Add Outer Line</button>';
+    // Only clear road lines if the containers exist (for backward compatibility)
+    const innerContainer = document.getElementById('inner-lines-container');
+    const outerContainer = document.getElementById('outer-lines-container');
+    
+    if (innerContainer) {
+        innerContainer.innerHTML = 
+            '<button type="button" class="add-line-btn" data-type="inner">+ Add Inner Line</button>';
+    }
+    
+    if (outerContainer) {
+        outerContainer.innerHTML = 
+            '<button type="button" class="add-line-btn" data-type="outer">+ Add Outer Line</button>';
+    }
 }
 
 /**
@@ -142,6 +225,13 @@ function clearRoadLines() {
  */
 function addRoadLine(type, lineData = null) {
     const container = document.getElementById(`${type}-lines-container`);
+    
+    // Only add road lines if the container exists (for backward compatibility)
+    if (!container) {
+        console.warn(`Road lines container '${type}-lines-container' not found. Road lines may not be supported in this data.`);
+        return;
+    }
+    
     const addButton = container.querySelector('.add-line-btn');
     
     const lineId = generateId();
@@ -205,22 +295,87 @@ function removeRoadLine(lineId) {
  * Collect form data
  */
 function collectFormData() {
-    const form = document.getElementById('geometa-form');
-    const formData = new FormData(form);
+    const geoMeta = {};
     
-    const geoMeta = {
-        driving_side: collectRadioValue('driving-side'),
-        hemisphere: collectRadioValue('hemisphere'),
-        road_lines: collectRoadLines(),
-        road_quality: collectCheckboxValues('road-quality'),
-        has_official_coverage: collectSelectValue('official-coverage'),
-        arid_lush: collectScaleValues('arid-lush'),
-        cold_hot: collectScaleValues('cold-hot'),
-        flat_mountainous: collectScaleValues('flat-mountainous'),
-        soil_color: collectCheckboxValues('soil-color')
-    };
+    // Collect data dynamically based on available meta fields
+    if (window.DynamicMeta) {
+        const availableFields = window.DynamicMeta.getAvailableMetaFields();
+        availableFields.forEach(field => {
+            const schema = window.DynamicMeta.getFieldSchema(field);
+            if (schema) {
+                geoMeta[field] = collectDynamicField(field, schema);
+            }
+        });
+    } else {
+        // Fallback to hardcoded fields
+        geoMeta.driving_side = collectRadioValue('driving-side');
+        geoMeta.hemisphere = collectRadioValue('hemisphere');
+        geoMeta.road_quality = collectCheckboxValues('road-quality');
+        geoMeta.has_official_coverage = collectSelectValue('official-coverage');
+        geoMeta.arid_lush = collectScaleValues('arid-lush');
+        geoMeta.cold_hot = collectScaleValues('cold-hot');
+        geoMeta.flat_mountainous = collectScaleValues('flat-mountainous');
+        geoMeta.soil_color = collectCheckboxValues('soil-color');
+    }
+    
+    // Always collect road lines if they exist
+    geoMeta.road_lines = collectRoadLines();
     
     return geoMeta;
+}
+
+/**
+ * Collect data from a dynamic field based on its schema
+ */
+function collectDynamicField(field, schema) {
+    switch (schema.type) {
+        case 'boolean':
+            const booleanSelect = document.querySelector(`select[name="${field}"]`);
+            if (booleanSelect && booleanSelect.value !== '') {
+                return booleanSelect.value === 'true';
+            }
+            return null;
+            
+        case 'array':
+            const checkboxes = document.querySelectorAll(`input[name="${field}"]:checked`);
+            const values = Array.from(checkboxes).map(cb => cb.value);
+            return values.length > 0 ? values : null;
+            
+        case 'string':
+            const radios = document.querySelectorAll(`input[name="${field}"]:checked`);
+            if (radios.length > 0) {
+                return Array.from(radios).map(r => r.value);
+            }
+            const select = document.querySelector(`select[name="${field}"]`);
+            if (select && select.value !== '') {
+                return select.value;
+            }
+            return null;
+            
+        case 'scale':
+            const minInput = document.querySelector(`input[name="${field}-min"]`);
+            const maxInput = document.querySelector(`input[name="${field}-max"]`);
+            const min = minInput && minInput.value ? parseInt(minInput.value) : null;
+            const max = maxInput && maxInput.value ? parseInt(maxInput.value) : null;
+            if (min !== null && max !== null) {
+                return { min, max };
+            }
+            return null;
+            
+        case 'number':
+            const numberInput = document.querySelector(`input[name="${field}"]`);
+            if (numberInput && numberInput.value !== '') {
+                return parseInt(numberInput.value);
+            }
+            return null;
+            
+        default:
+            const textInput = document.querySelector(`input[name="${field}"]`);
+            if (textInput && textInput.value !== '') {
+                return textInput.value;
+            }
+            return null;
+    }
 }
 
 /**
@@ -272,33 +427,39 @@ function collectRoadLines() {
     const innerLines = [];
     const outerLines = [];
     
-    // Collect inner lines
-    document.querySelectorAll('#inner-lines-container .line-item').forEach(item => {
-        const lineId = item.dataset.lineId;
-        const line = {
-            number: item.querySelector(`select[name="line-${lineId}-number"]`).value,
-            color: item.querySelector(`select[name="line-${lineId}-color"]`).value,
-            pattern: item.querySelector(`select[name="line-${lineId}-pattern"]`).value
-        };
-        
-        if (line.number && line.color && line.pattern) {
-            innerLines.push(line);
-        }
-    });
+    // Collect inner lines (only if container exists)
+    const innerContainer = document.getElementById('inner-lines-container');
+    if (innerContainer) {
+        document.querySelectorAll('#inner-lines-container .line-item').forEach(item => {
+            const lineId = item.dataset.lineId;
+            const line = {
+                number: item.querySelector(`select[name="line-${lineId}-number"]`).value,
+                color: item.querySelector(`select[name="line-${lineId}-color"]`).value,
+                pattern: item.querySelector(`select[name="line-${lineId}-pattern"]`).value
+            };
+            
+            if (line.number && line.color && line.pattern) {
+                innerLines.push(line);
+            }
+        });
+    }
     
-    // Collect outer lines
-    document.querySelectorAll('#outer-lines-container .line-item').forEach(item => {
-        const lineId = item.dataset.lineId;
-        const line = {
-            number: item.querySelector(`select[name="line-${lineId}-number"]`).value,
-            color: item.querySelector(`select[name="line-${lineId}-color"]`).value,
-            pattern: item.querySelector(`select[name="line-${lineId}-pattern"]`).value
-        };
-        
-        if (line.number && line.color && line.pattern) {
-            outerLines.push(line);
-        }
-    });
+    // Collect outer lines (only if container exists)
+    const outerContainer = document.getElementById('outer-lines-container');
+    if (outerContainer) {
+        document.querySelectorAll('#outer-lines-container .line-item').forEach(item => {
+            const lineId = item.dataset.lineId;
+            const line = {
+                number: item.querySelector(`select[name="line-${lineId}-number"]`).value,
+                color: item.querySelector(`select[name="line-${lineId}-color"]`).value,
+                pattern: item.querySelector(`select[name="line-${lineId}-pattern"]`).value
+            };
+            
+            if (line.number && line.color && line.pattern) {
+                outerLines.push(line);
+            }
+        });
+    }
     
     if (innerLines.length === 0 && outerLines.length === 0) return null;
     
@@ -382,23 +543,30 @@ function resetForm() {
  * Initialize editor
  */
 function initEditor() {
-    // Form submission
-    document.getElementById('geometa-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveGeoMetaData();
+    // Form submission (use event delegation since form is dynamic)
+    document.addEventListener('submit', function(e) {
+        if (e.target.id === 'geometa-form') {
+            e.preventDefault();
+            saveGeoMetaData();
+        }
     });
     
-    // Reset button
-    document.getElementById('reset-form-btn').addEventListener('click', function() {
-        resetForm();
+    // Reset button (use event delegation)
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'reset-form-btn') {
+            resetForm();
+        }
     });
     
     // Close editor button
-    document.getElementById('close-editor-btn').addEventListener('click', function() {
-        closeEditor();
-    });
+    const closeBtn = document.getElementById('close-editor-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            closeEditor();
+        });
+    }
     
-    // Add road line buttons
+    // Add road line buttons (use event delegation)
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('add-line-btn')) {
             const type = e.target.dataset.type;

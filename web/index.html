@@ -79,14 +79,7 @@
                                             <input type="text" id="meta-selection-search" placeholder="Search meta fields..." class="search-input">
                                         </div>
                                         <div class="dropdown-content">
-                                            <div class="meta-selection-option" data-field="driving_side">Driving Side</div>
-                                            <div class="meta-selection-option" data-field="hemisphere">Hemisphere</div>
-                                            <div class="meta-selection-option" data-field="road_quality">Road Quality</div>
-                                            <div class="meta-selection-option" data-field="has_official_coverage">Official Coverage</div>
-                                            <div class="meta-selection-option" data-field="arid_lush">Arid to Lush</div>
-                                            <div class="meta-selection-option" data-field="cold_hot">Cold to Hot</div>
-                                            <div class="meta-selection-option" data-field="flat_mountainous">Flat to Mountainous</div>
-                                            <div class="meta-selection-option" data-field="soil_color">Soil Color</div>
+                                            <div class="no-fields">Loading meta fields...</div>
                                         </div>
                                     </div>
                                 </div>
@@ -165,105 +158,7 @@
                     
                     <div id="geometa-editor" style="display: none;">
                         <form id="geometa-form">
-                            <!-- Driving Side -->
-                            <div class="form-group">
-                                <label for="driving-side">Driving Side:</label>
-                                <div class="radio-group">
-                                    <label><input type="radio" name="driving-side" value="left"> Left</label>
-                                    <label><input type="radio" name="driving-side" value="right"> Right</label>
-                                </div>
-                            </div>
-
-                            <!-- Hemisphere -->
-                            <div class="form-group">
-                                <label for="hemisphere">Hemisphere:</label>
-                                <div class="radio-group">
-                                    <label><input type="radio" name="hemisphere" value="N"> North</label>
-                                    <label><input type="radio" name="hemisphere" value="S"> South</label>
-                                    <label><input type="radio" name="hemisphere" value="E"> Equator</label>
-                                </div>
-                            </div>
-
-                            <!-- Road Lines -->
-                            <div class="form-group">
-                                <label>Road Lines:</label>
-                                <div class="road-lines-section">
-                                    <h4>Inner Lines</h4>
-                                    <div id="inner-lines-container">
-                                        <button type="button" class="add-line-btn" data-type="inner">+ Add Inner Line</button>
-                                    </div>
-                                    
-                                    <h4>Outer Lines</h4>
-                                    <div id="outer-lines-container">
-                                        <button type="button" class="add-line-btn" data-type="outer">+ Add Outer Line</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Road Quality -->
-                            <div class="form-group">
-                                <label for="road-quality">Road Quality:</label>
-                                <div class="checkbox-group">
-                                    <label><input type="checkbox" name="road-quality" value="maintained"> Maintained</label>
-                                    <label><input type="checkbox" name="road-quality" value="poor"> Poor</label>
-                                </div>
-                            </div>
-
-                            <!-- Official Coverage -->
-                            <div class="form-group">
-                                <label for="official-coverage">Has Official Coverage:</label>
-                                <select name="official-coverage">
-                                    <option value="">Not Set</option>
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-
-                            <!-- Climate Scales -->
-                            <div class="form-group">
-                                <label for="arid-lush">Arid to Lush (1-5):</label>
-                                <div class="scale-inputs">
-                                    <input type="number" name="arid-lush-min" min="1" max="5" placeholder="Min">
-                                    <span>to</span>
-                                    <input type="number" name="arid-lush-max" min="1" max="5" placeholder="Max">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cold-hot">Cold to Hot (1-5):</label>
-                                <div class="scale-inputs">
-                                    <input type="number" name="cold-hot-min" min="1" max="5" placeholder="Min">
-                                    <span>to</span>
-                                    <input type="number" name="cold-hot-max" min="1" max="5" placeholder="Max">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="flat-mountainous">Flat to Mountainous (1-5):</label>
-                                <div class="scale-inputs">
-                                    <input type="number" name="flat-mountainous-min" min="1" max="5" placeholder="Min">
-                                    <span>to</span>
-                                    <input type="number" name="flat-mountainous-max" min="1" max="5" placeholder="Max">
-                                </div>
-                            </div>
-
-                            <!-- Soil Color -->
-                            <div class="form-group">
-                                <label for="soil-color">Soil Color:</label>
-                                <div class="checkbox-group">
-                                    <label><input type="checkbox" name="soil-color" value="red"> Red</label>
-                                    <label><input type="checkbox" name="soil-color" value="brown"> Brown</label>
-                                    <label><input type="checkbox" name="soil-color" value="gray"> Gray</label>
-                                    <label><input type="checkbox" name="soil-color" value="black"> Black</label>
-                                    <label><input type="checkbox" name="soil-color" value="other"> Other</label>
-                                </div>
-                            </div>
-
-                            <!-- Form Actions -->
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                                <button type="button" class="btn" id="reset-form-btn">Reset</button>
-                            </div>
+                            <p>Loading meta fields...</p>
                         </form>
                     </div>
                 </div>
@@ -285,6 +180,7 @@
     <!-- Custom JS -->
     <script src="js/utils.js"></script>
     <script src="js/validator.js"></script>
+    <script src="js/dynamic-meta.js"></script>
     <script src="js/file-handler.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/mass-edit.js"></script>

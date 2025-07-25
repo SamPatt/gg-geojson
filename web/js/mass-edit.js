@@ -52,8 +52,12 @@ function startMassEdit(field, fieldName) {
     document.getElementById('mass-edit-form').style.display = 'block';
     document.getElementById('selected-field').textContent = fieldName;
     
-    // Generate field content
-    generateMassEditField(field);
+    // Generate field content using dynamic schema
+    if (window.DynamicMeta) {
+        window.DynamicMeta.generateDynamicMassEditField(field);
+    } else {
+        generateMassEditField(field);
+    }
     
     // Update map interaction
     updateMapForMassSelection();
@@ -315,6 +319,15 @@ function applyMassEditToSelected() {
 function collectMassEditValue() {
     const field = currentMassEditField;
     
+    // Use dynamic field collection if available
+    if (window.DynamicMeta) {
+        const schema = window.DynamicMeta.getFieldSchema(field);
+        if (schema) {
+            return collectDynamicMassEditField(field, schema);
+        }
+    }
+    
+    // Fallback to hardcoded field collection
     switch(field) {
         case 'driving_side':
             const drivingRadio = document.querySelector('input[name="mass-driving-side"]:checked');
@@ -351,6 +364,60 @@ function collectMassEditValue() {
             return soilValues.length > 0 ? soilValues : null;
             
         default:
+            return null;
+    }
+}
+
+/**
+ * Collect data from a dynamic mass edit field based on its schema
+ */
+function collectDynamicMassEditField(field, schema) {
+    switch (schema.type) {
+        case 'boolean':
+            const booleanSelect = document.querySelector(`select[name="${field}"]`);
+            if (booleanSelect && booleanSelect.value !== '') {
+                return booleanSelect.value === 'true';
+            }
+            return null;
+            
+        case 'array':
+            const checkboxes = document.querySelectorAll(`input[name="${field}"]:checked`);
+            const values = Array.from(checkboxes).map(cb => cb.value);
+            return values.length > 0 ? values : null;
+            
+        case 'string':
+            const radios = document.querySelectorAll(`input[name="${field}"]:checked`);
+            if (radios.length > 0) {
+                return Array.from(radios).map(r => r.value);
+            }
+            const select = document.querySelector(`select[name="${field}"]`);
+            if (select && select.value !== '') {
+                return select.value;
+            }
+            return null;
+            
+        case 'scale':
+            const minInput = document.querySelector(`input[name="${field}-min"]`);
+            const maxInput = document.querySelector(`input[name="${field}-max"]`);
+            const min = minInput && minInput.value ? parseInt(minInput.value) : null;
+            const max = maxInput && maxInput.value ? parseInt(maxInput.value) : null;
+            if (min !== null && max !== null) {
+                return { min, max };
+            }
+            return null;
+            
+        case 'number':
+            const numberInput = document.querySelector(`input[name="${field}"]`);
+            if (numberInput && numberInput.value !== '') {
+                return parseInt(numberInput.value);
+            }
+            return null;
+            
+        default:
+            const textInput = document.querySelector(`input[name="${field}"]`);
+            if (textInput && textInput.value !== '') {
+                return textInput.value;
+            }
             return null;
     }
 }
