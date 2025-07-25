@@ -185,6 +185,63 @@
     border: 1px solid #ccc;
 }
 
+/* Mass Selection Controls */
+.mass-selection-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding: 0.75rem;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.selection-header {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.selection-btn {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: none;
+    border-radius: 3px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.selection-btn:hover {
+    background: #2980b9;
+}
+
+.selection-btn:last-of-type {
+    margin-bottom: 0.75rem;
+}
+
+.selection-count {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+/* Country Selection States */
+.country-selected-mass {
+    fill: #e74c3c !important;
+    stroke: #c0392b !important;
+    stroke-width: 2px !important;
+}
+
 /* Responsive Map */
 @media (max-width: 768px) {
     .map-controls {
@@ -202,5 +259,11 @@
         bottom: 10px;
         left: 10px;
         font-size: 11px;
+    }
+    
+    .mass-selection-controls {
+        top: 5px;
+        left: 5px;
+        min-width: 120px;
     }
 } 

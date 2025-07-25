@@ -36,6 +36,18 @@
                     <button id="zoom-out-btn" class="map-btn">-</button>
                     <button id="fit-bounds-btn" class="map-btn">Fit All</button>
                 </div>
+                
+                <!-- Mass Selection Controls -->
+                <div id="mass-selection-controls" class="mass-selection-controls" style="display: none;">
+                    <div class="selection-header">
+                        <span>Select Countries</span>
+                    </div>
+                    <button id="select-all-btn" class="selection-btn">Select All</button>
+                    <button id="select-none-btn" class="selection-btn">Select None</button>
+                    <div class="selection-count">
+                        <span id="selected-count">0</span> selected
+                    </div>
+                </div>
             </div>
 
             <!-- Editor Panel -->
@@ -48,6 +60,64 @@
                 <div class="panel-content">
                     <div id="country-info">
                         <p>Select a country on the map to edit its GeoMeta data.</p>
+                        
+                        <!-- Mass Edit Section -->
+                        <div class="mass-edit-section">
+                            <h4>Mass Edit Tools</h4>
+                            
+                            <!-- Mass Edit Button -->
+                            <div class="mass-edit-controls">
+                                <button id="mass-edit-btn" class="btn btn-secondary">
+                                    <span class="btn-icon">📝</span>
+                                    Mass Edit
+                                </button>
+                                
+                                <!-- Mass Edit Dropdown -->
+                                <div id="mass-edit-dropdown" class="mass-edit-dropdown" style="display: none;">
+                                    <div class="dropdown-header">
+                                        <input type="text" id="meta-search" placeholder="Search meta fields..." class="search-input">
+                                    </div>
+                                    <div class="dropdown-content">
+                                        <div class="meta-option" data-field="driving_side">Driving Side</div>
+                                        <div class="meta-option" data-field="hemisphere">Hemisphere</div>
+                                        <div class="meta-option" data-field="road_quality">Road Quality</div>
+                                        <div class="meta-option" data-field="has_official_coverage">Official Coverage</div>
+                                        <div class="meta-option" data-field="arid_lush">Arid to Lush</div>
+                                        <div class="meta-option" data-field="cold_hot">Cold to Hot</div>
+                                        <div class="meta-option" data-field="flat_mountainous">Flat to Mountainous</div>
+                                        <div class="meta-option" data-field="soil_color">Soil Color</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mass Edit Form -->
+                            <div id="mass-edit-form" class="mass-edit-form" style="display: none;">
+                                <div class="form-header">
+                                    <h5 id="mass-edit-title">Edit: <span id="selected-field"></span></h5>
+                                    <button id="close-mass-edit" class="btn-small">×</button>
+                                </div>
+                                
+                                <div class="form-content">
+                                    <div id="mass-edit-field-container">
+                                        <!-- Dynamic field content will be inserted here -->
+                                    </div>
+                                    
+                                    <div class="mass-edit-actions">
+                                        <button id="apply-mass-edit" class="btn btn-primary">Apply to Selected Countries</button>
+                                        <button id="cancel-mass-edit" class="btn">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Placeholder Button -->
+                        <div class="placeholder-section">
+                            <button id="placeholder-btn" class="btn btn-secondary" disabled>
+                                <span class="btn-icon">🔧</span>
+                                Placeholder Feature
+                            </button>
+                            <small class="placeholder-note">Coming soon...</small>
+                        </div>
                     </div>
                     
                     <div id="geometa-editor" style="display: none;">
@@ -174,6 +244,7 @@
     <script src="js/validator.js"></script>
     <script src="js/file-handler.js"></script>
     <script src="js/editor.js"></script>
+    <script src="js/mass-edit.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
 </body>
