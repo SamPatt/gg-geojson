@@ -136,12 +136,25 @@ function updateMapColors(fieldName, fieldType, possibleValues) {
         
         console.log('Country:', feature.properties.ADMIN, 'Value:', fieldValue, 'Color:', color);
         
-        layer.setStyle({
-            fillColor: color,
-            weight: 1,
-            color: '#7f8c8d',
-            fillOpacity: 0.8
-        });
+        // Store this as the original color for this layer
+        if (window.originalColors) {
+            window.originalColors.set(layer, {
+                fillColor: color,
+                weight: 1,
+                color: '#7f8c8d',
+                fillOpacity: 0.8
+            });
+        }
+        
+        // Don't override selection
+        if (layer !== window.selectedCountry) {
+            layer.setStyle({
+                fillColor: color,
+                weight: 1,
+                color: '#7f8c8d',
+                fillOpacity: 0.8
+            });
+        }
     });
     
     // Create legend
@@ -160,12 +173,20 @@ function clearLegend() {
     // Reset map to default styling
     if (window.GeoMetaApp.geoJsonLayer) {
         window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
-            layer.setStyle({
-                fillColor: '#95a5a6',
-                weight: 0.5,
-                color: '#7f8c8d',
-                fillOpacity: 0.7
-            });
+            // Don't override selection
+            if (layer !== window.selectedCountry) {
+                layer.setStyle({
+                    fillColor: '#95a5a6',
+                    weight: 0.5,
+                    color: '#7f8c8d',
+                    fillOpacity: 0.3
+                });
+                
+                // Clear stored original color
+                if (window.originalColors) {
+                    window.originalColors.delete(layer);
+                }
+            }
         });
     }
 }

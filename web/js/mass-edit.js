@@ -187,43 +187,85 @@ function updateMapForMassSelection() {
             
             if (selectedCountries.has(countryName)) {
                 selectedCountries.delete(countryName);
-                layer.setStyle({
-                    fillColor: '#95a5a6',
-                    weight: 0.5,
-                    color: '#7f8c8d'
-                });
+                // Restore original color when deselected
+                const originalColor = window.originalColors.get(layer);
+                if (originalColor) {
+                    layer.setStyle(originalColor);
+                } else {
+                    layer.setStyle({
+                        fillColor: '#95a5a6',
+                        weight: 0.5,
+                        color: '#7f8c8d',
+                        fillOpacity: 0.3
+                    });
+                }
             } else {
                 selectedCountries.add(countryName);
+                // Store current color as original if not already stored
+                if (!window.originalColors.has(layer)) {
+                    const currentStyle = layer.options;
+                    window.originalColors.set(layer, {
+                        fillColor: currentStyle.fillColor,
+                        weight: currentStyle.weight,
+                        color: currentStyle.color,
+                        fillOpacity: currentStyle.fillOpacity
+                    });
+                }
+                // Use blue for selected countries (same as single selection)
                 layer.setStyle({
-                    fillColor: '#e74c3c',
+                    fillColor: '#3498db',
                     weight: 2,
-                    color: '#c0392b'
+                    color: '#2980b9',
+                    fillOpacity: 0.8
                 });
             }
             
             updateSelectionCount();
         });
         
-        // Override hover behavior to not interfere with selection
+        // Override hover behavior to preserve legend colors
         layer.off('mouseover');
         layer.off('mouseout');
         layer.on('mouseover', function(e) {
             if (!selectedCountries.has(getCountryName(layer.feature))) {
+                // Store current color if not already stored
+                if (!window.originalColors.has(layer)) {
+                    const currentStyle = layer.options;
+                    window.originalColors.set(layer, {
+                        fillColor: currentStyle.fillColor,
+                        weight: currentStyle.weight,
+                        color: currentStyle.color,
+                        fillOpacity: currentStyle.fillOpacity
+                    });
+                }
+                
+                // Apply hover style (don't override selection)
                 layer.setStyle({
-                    fillColor: '#bdc3c7',
+                    fillColor: '#d5dbdb',
                     weight: 1,
-                    color: '#95a5a6'
+                    color: '#bdc3c7',
+                    fillOpacity: 0.8
                 });
             }
+            // If country is selected, don't change its style (keep it blue)
         });
         layer.on('mouseout', function(e) {
             if (!selectedCountries.has(getCountryName(layer.feature))) {
-                layer.setStyle({
-                    fillColor: '#95a5a6',
-                    weight: 0.5,
-                    color: '#7f8c8d'
-                });
+                // Restore original color (legend color)
+                const originalColor = window.originalColors.get(layer);
+                if (originalColor) {
+                    layer.setStyle(originalColor);
+                } else {
+                    // Fallback to default gray
+                    layer.setStyle({
+                        fillColor: '#95a5a6',
+                        weight: 0.5,
+                        color: '#7f8c8d',
+                        fillOpacity: 0.3
+                    });
+                }
             }
+            // If country is selected, don't change its style (keep it blue)
         });
     });
 }
@@ -241,23 +283,10 @@ function resetMapInteraction() {
             selectCountry(layer.feature, layer);
         });
         
-        // Restore normal hover behavior
+        // Restore normal hover behavior (let map.js handle it)
         layer.off('mouseover');
         layer.off('mouseout');
-        layer.on('mouseover', function(e) {
-            layer.setStyle({
-                fillColor: '#bdc3c7',
-                weight: 1,
-                color: '#95a5a6'
-            });
-        });
-        layer.on('mouseout', function(e) {
-            layer.setStyle({
-                fillColor: '#95a5a6',
-                weight: 0.5,
-                color: '#7f8c8d'
-            });
-        });
+        // The normal hover behavior will be restored by the map.js event handlers
     });
 }
 
@@ -481,12 +510,25 @@ function initMassSelectionControls() {
             selectedCountries.add(getCountryName(feature));
         });
         
-        // Update styling
+        // Update styling - use blue for selected countries
         window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+            // Store current color as original if not already stored
+            if (!window.originalColors.has(layer)) {
+                const currentStyle = layer.options;
+                window.originalColors.set(layer, {
+                    fillColor: currentStyle.fillColor,
+                    weight: currentStyle.weight,
+                    color: currentStyle.color,
+                    fillOpacity: currentStyle.fillOpacity
+                });
+            }
+            
+            // Use blue for selected countries (same as single selection)
             layer.setStyle({
-                fillColor: '#e74c3c',
+                fillColor: '#3498db',
                 weight: 2,
-                color: '#c0392b'
+                color: '#2980b9',
+                fillOpacity: 0.8
             });
         });
         
@@ -495,7 +537,23 @@ function initMassSelectionControls() {
     
     selectNoneBtn.addEventListener('click', function() {
         selectedCountries.clear();
-        clearMassSelectionStyling();
+        
+        // Restore original colors (legend colors) instead of clearing to gray
+        window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+            const originalColor = window.originalColors.get(layer);
+            if (originalColor) {
+                layer.setStyle(originalColor);
+            } else {
+                // Fallback to default gray if no original color stored
+                layer.setStyle({
+                    fillColor: '#95a5a6',
+                    weight: 0.5,
+                    color: '#7f8c8d',
+                    fillOpacity: 0.3
+                });
+            }
+        });
+        
         updateSelectionCount();
     });
 }

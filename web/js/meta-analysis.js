@@ -16,7 +16,6 @@ function initMetaAnalysis() {
     const selectMetaDropdown = document.getElementById('select-meta-dropdown');
     const metaSelectionSearch = document.getElementById('meta-selection-search');
     const changeMetaBtn = document.getElementById('change-meta-btn');
-    const analyzeMetaBtn = document.getElementById('analyze-meta-btn');
     const closeAnalysis = document.getElementById('close-analysis');
     
     // Select meta button click
@@ -64,16 +63,7 @@ function initMetaAnalysis() {
         }
     });
     
-    // Analyze meta button click (toggle)
-    analyzeMetaBtn.addEventListener('click', function() {
-        if (currentSelectedMeta) {
-            if (analysisVisible) {
-                hideMetaAnalysis();
-            } else {
-                showMetaAnalysis();
-            }
-        }
-    });
+    // Analyze meta button is hidden - analysis is automatic when meta is selected
     
     // Close analysis
     closeAnalysis.addEventListener('click', function() {
@@ -121,8 +111,7 @@ function clearSelectedMeta() {
     // Hide action buttons
     document.getElementById('meta-actions').style.display = 'none';
     
-    // Reset analyze button text
-    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Analyze Meta';
+    // Analyze button is hidden - no need to update text
     
     // Show select meta button
     document.getElementById('select-meta-btn').style.display = 'flex';
@@ -156,8 +145,7 @@ function startMetaAnalysis(field, fieldName) {
     document.getElementById('meta-analysis-results').style.display = 'block';
     document.getElementById('selected-analysis-field').textContent = fieldName;
     
-    // Update analyze button text
-    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
+    // Analyze button is hidden - no need to update text
     
     // Get field schema for legend
     const schema = window.DynamicMeta.getFieldSchema(field);
@@ -185,8 +173,7 @@ function showMetaAnalysis() {
     document.getElementById('meta-analysis-results').style.display = 'block';
     document.getElementById('selected-analysis-field').textContent = currentSelectedMeta.name;
     
-    // Update analyze button text
-    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
+    // Analyze button is hidden - no need to update text
     
     // Get field schema for legend
     const schema = window.DynamicMeta.getFieldSchema(currentSelectedMeta.field);
@@ -211,8 +198,7 @@ function hideMetaAnalysis() {
     // Hide analysis results
     document.getElementById('meta-analysis-results').style.display = 'none';
     
-    // Update analyze button text
-    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Show Analysis';
+    // Analyze button is hidden - no need to update text
     
     // Clear legend
     if (window.Legend) {
@@ -234,8 +220,7 @@ function cancelMetaAnalysis() {
     // Hide analysis results
     document.getElementById('meta-analysis-results').style.display = 'none';
     
-    // Reset analyze button text
-    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Analyze Meta';
+    // Analyze button is hidden - no need to update text
     
     // Reset map visualization
     resetMapForMetaAnalysis();
@@ -403,15 +388,7 @@ function updateMapForMetaAnalysis(field) {
     clearMetaValueLabels();
     
     // Don't override legend colors - let the legend system handle the styling
-    // Just add value labels
-    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
-        const feature = layer.feature;
-        const geoMeta = feature.properties.geo_meta;
-        const fieldValue = geoMeta && geoMeta[field];
-        
-        // Add value label
-        addMetaValueLabel(layer, field, fieldValue);
-    });
+    // No value labels - just use the legend for data visualization
 }
 
 /**

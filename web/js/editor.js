@@ -39,6 +39,11 @@ function closeEditor() {
     currentEditingFeature = null;
     window.GeoMetaApp.currentEditingFeature = null;
     document.querySelector('.panel-header h3').textContent = 'GeoMeta Editor';
+    
+    // Clear map selection
+    if (window.clearSelection) {
+        window.clearSelection();
+    }
 }
 
 /**
