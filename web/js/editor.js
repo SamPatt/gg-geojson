@@ -14,6 +14,9 @@ function openEditor(feature) {
     document.getElementById('geometa-editor').style.display = 'block';
     document.getElementById('country-info').style.display = 'none';
     
+    // Show close button for country view
+    document.getElementById('close-editor-btn').style.display = 'block';
+    
     // Populate form with existing data
     populateForm(feature.properties.geo_meta || createEmptyGeoMeta());
     
@@ -28,6 +31,9 @@ function openEditor(feature) {
 function closeEditor() {
     document.getElementById('geometa-editor').style.display = 'none';
     document.getElementById('country-info').style.display = 'block';
+    
+    // Hide close button when returning to main view
+    document.getElementById('close-editor-btn').style.display = 'none';
     
     currentEditingFeature = null;
     document.querySelector('.panel-header h3').textContent = 'GeoMeta Editor';

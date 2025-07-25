@@ -28,6 +28,7 @@ function initMetaAnalysis() {
     
     // Change meta button click
     changeMetaBtn.addEventListener('click', function() {
+        clearSelectedMeta();
         selectMetaDropdown.style.display = 'block';
         metaSelectionSearch.focus();
     });
