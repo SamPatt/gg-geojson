@@ -242,6 +242,34 @@
     stroke-width: 2px !important;
 }
 
+/* Meta Analysis Visualization */
+.country-meta-analysis {
+    stroke-width: 2px !important;
+}
+
+.country-meta-analysis.has-data {
+    fill: #27ae60 !important;
+    stroke: #229954 !important;
+}
+
+.country-meta-analysis.null-value {
+    fill: #e74c3c !important;
+    stroke: #c0392b !important;
+}
+
+/* Meta Value Labels */
+.meta-value-label {
+    font-size: 10px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    fill: white;
+    stroke: rgba(0,0,0,0.5);
+    stroke-width: 1px;
+    paint-order: stroke;
+}
+
 /* Responsive Map */
 @media (max-width: 768px) {
     .map-controls {

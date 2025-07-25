@@ -61,33 +61,57 @@
                     <div id="country-info">
                         <p>Select a country on the map to edit its GeoMeta data.</p>
                         
-                        <!-- Mass Edit Section -->
-                        <div class="mass-edit-section">
-                            <h4>Mass Edit Tools</h4>
+                        <!-- Metas Section -->
+                        <div class="metas-section">
+                            <h4>Metas</h4>
                             
-                            <!-- Mass Edit Button -->
-                            <div class="mass-edit-controls">
-                                <button id="mass-edit-btn" class="btn btn-secondary">
-                                    <span class="btn-icon">📝</span>
-                                    Mass Edit
-                                </button>
-                                
-                                <!-- Mass Edit Dropdown -->
-                                <div id="mass-edit-dropdown" class="mass-edit-dropdown" style="display: none;">
-                                    <div class="dropdown-header">
-                                        <input type="text" id="meta-search" placeholder="Search meta fields..." class="search-input">
-                                    </div>
-                                    <div class="dropdown-content">
-                                        <div class="meta-option" data-field="driving_side">Driving Side</div>
-                                        <div class="meta-option" data-field="hemisphere">Hemisphere</div>
-                                        <div class="meta-option" data-field="road_quality">Road Quality</div>
-                                        <div class="meta-option" data-field="has_official_coverage">Official Coverage</div>
-                                        <div class="meta-option" data-field="arid_lush">Arid to Lush</div>
-                                        <div class="meta-option" data-field="cold_hot">Cold to Hot</div>
-                                        <div class="meta-option" data-field="flat_mountainous">Flat to Mountainous</div>
-                                        <div class="meta-option" data-field="soil_color">Soil Color</div>
+                            <!-- Meta Selection -->
+                            <div class="meta-selection">
+                                <div class="meta-selection-controls">
+                                    <button id="select-meta-btn" class="btn btn-secondary">
+                                        <span class="btn-icon">🔍</span>
+                                        Select Meta
+                                    </button>
+                                    
+                                    <!-- Meta Selection Dropdown -->
+                                    <div id="select-meta-dropdown" class="meta-selection-dropdown" style="display: none;">
+                                        <div class="dropdown-header">
+                                            <input type="text" id="meta-selection-search" placeholder="Search meta fields..." class="search-input">
+                                        </div>
+                                        <div class="dropdown-content">
+                                            <div class="meta-selection-option" data-field="driving_side">Driving Side</div>
+                                            <div class="meta-selection-option" data-field="hemisphere">Hemisphere</div>
+                                            <div class="meta-selection-option" data-field="road_quality">Road Quality</div>
+                                            <div class="meta-selection-option" data-field="has_official_coverage">Official Coverage</div>
+                                            <div class="meta-selection-option" data-field="arid_lush">Arid to Lush</div>
+                                            <div class="meta-selection-option" data-field="cold_hot">Cold to Hot</div>
+                                            <div class="meta-selection-option" data-field="flat_mountainous">Flat to Mountainous</div>
+                                            <div class="meta-selection-option" data-field="soil_color">Soil Color</div>
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Selected Meta Display -->
+                                <div id="selected-meta-display" class="selected-meta-display" style="display: none;">
+                                    <div class="selected-meta-info">
+                                        <span class="selected-meta-label">Selected:</span>
+                                        <span id="current-selected-meta" class="selected-meta-name"></span>
+                                    </div>
+                                    <button id="change-meta-btn" class="btn-small">Change</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Meta Actions -->
+                            <div class="meta-actions">
+                                <button id="edit-meta-btn" class="btn btn-secondary" disabled>
+                                    <span class="btn-icon">📝</span>
+                                    Edit Meta
+                                </button>
+                                
+                                <button id="analyze-meta-btn" class="btn btn-secondary" disabled>
+                                    <span class="btn-icon">📊</span>
+                                    Analyze Meta
+                                </button>
                             </div>
                             
                             <!-- Mass Edit Form -->
@@ -108,15 +132,34 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Placeholder Button -->
-                        <div class="placeholder-section">
-                            <button id="placeholder-btn" class="btn btn-secondary" disabled>
-                                <span class="btn-icon">🔧</span>
-                                Placeholder Feature
-                            </button>
-                            <small class="placeholder-note">Coming soon...</small>
+                            
+                            <!-- Meta Analysis Results -->
+                            <div id="meta-analysis-results" class="meta-analysis-results" style="display: none;">
+                                <div class="analysis-header">
+                                    <h5 id="analysis-title">Analysis: <span id="selected-analysis-field"></span></h5>
+                                    <button id="close-analysis" class="btn-small">×</button>
+                                </div>
+                                
+                                <div class="analysis-content">
+                                    <div class="analysis-summary">
+                                        <div class="summary-item">
+                                            <span class="summary-label">Countries with data:</span>
+                                            <span id="countries-with-data" class="summary-value">0</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Countries with null:</span>
+                                            <span id="countries-with-null" class="summary-value">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analysis-list">
+                                        <h6>Countries and Values:</h6>
+                                        <div id="countries-list" class="countries-list">
+                                            <!-- Dynamic content will be inserted here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -245,6 +288,7 @@
     <script src="js/file-handler.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/mass-edit.js"></script>
+    <script src="js/meta-analysis.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
 </body>

@@ -10,48 +10,15 @@ let currentMassEditField = null;
  * Initialize mass edit functionality
  */
 function initMassEdit() {
-    const massEditBtn = document.getElementById('mass-edit-btn');
-    const massEditDropdown = document.getElementById('mass-edit-dropdown');
-    const metaSearch = document.getElementById('meta-search');
+    const editMetaBtn = document.getElementById('edit-meta-btn');
     const closeMassEdit = document.getElementById('close-mass-edit');
     const cancelMassEdit = document.getElementById('cancel-mass-edit');
     const applyMassEdit = document.getElementById('apply-mass-edit');
     
-    // Mass edit button click
-    massEditBtn.addEventListener('click', function() {
-        massEditDropdown.style.display = massEditDropdown.style.display === 'none' ? 'block' : 'none';
-        if (massEditDropdown.style.display === 'block') {
-            metaSearch.focus();
-        }
-    });
-    
-    // Search functionality
-    metaSearch.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const options = document.querySelectorAll('.meta-option');
-        
-        options.forEach(option => {
-            const text = option.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                option.style.display = 'block';
-            } else {
-                option.style.display = 'none';
-            }
-        });
-    });
-    
-    // Meta option selection
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('meta-option')) {
-            const field = e.target.dataset.field;
-            const fieldName = e.target.textContent;
-            
-            // Close dropdown
-            massEditDropdown.style.display = 'none';
-            metaSearch.value = '';
-            
-            // Start mass edit mode
-            startMassEdit(field, fieldName);
+    // Edit meta button click
+    editMetaBtn.addEventListener('click', function() {
+        if (currentSelectedMeta) {
+            startMassEdit(currentSelectedMeta.field, currentSelectedMeta.name);
         }
     });
     
@@ -67,13 +34,6 @@ function initMassEdit() {
     // Apply mass edit
     applyMassEdit.addEventListener('click', function() {
         applyMassEditToSelected();
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!massEditBtn.contains(e.target) && !massEditDropdown.contains(e.target)) {
-            massEditDropdown.style.display = 'none';
-        }
     });
 }
 
@@ -102,24 +62,7 @@ function startMassEdit(field, fieldName) {
     updateSelectionCount();
 }
 
-/**
- * Cancel mass edit mode
- */
-function cancelMassEditMode() {
-    massEditMode = false;
-    currentMassEditField = null;
-    selectedCountries.clear();
-    
-    // Hide controls
-    document.getElementById('mass-selection-controls').style.display = 'none';
-    document.getElementById('mass-edit-form').style.display = 'none';
-    
-    // Reset map interaction
-    resetMapInteraction();
-    
-    // Clear any mass selection styling
-    clearMassSelectionStyling();
-}
+
 
 /**
  * Generate the appropriate field content for mass editing

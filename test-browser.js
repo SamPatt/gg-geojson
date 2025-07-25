@@ -19,6 +19,7 @@ const requiredFiles = [
     'web/js/map.js',
     'web/js/editor.js',
     'web/js/mass-edit.js',
+    'web/js/meta-analysis.js',
     'web/js/file-handler.js',
     'web/js/utils.js',
     'web/js/validator.js',
