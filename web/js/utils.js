@@ -47,11 +47,26 @@ function formatGeoMetaData(geoMeta) {
     const parts = [];
     
     if (geoMeta.driving_side && geoMeta.driving_side.length > 0) {
-        parts.push(`Driving: ${geoMeta.driving_side.join(', ')}`);
+        const drivingLabels = geoMeta.driving_side.map(d => {
+            switch(d) {
+                case 'left': return 'Left';
+                case 'right': return 'Right';
+                default: return d;
+            }
+        });
+        parts.push(`Driving: ${drivingLabels.join(', ')}`);
     }
     
     if (geoMeta.hemisphere && geoMeta.hemisphere.length > 0) {
-        parts.push(`Hemisphere: ${geoMeta.hemisphere.join(', ')}`);
+        const hemisphereLabels = geoMeta.hemisphere.map(h => {
+            switch(h) {
+                case 'N': return 'North';
+                case 'S': return 'South';
+                case 'E': return 'Equator';
+                default: return h;
+            }
+        });
+        parts.push(`Hemisphere: ${hemisphereLabels.join(', ')}`);
     }
     
     if (geoMeta.road_quality && geoMeta.road_quality.length > 0) {

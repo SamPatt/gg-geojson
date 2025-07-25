@@ -104,6 +104,32 @@
     margin: 0;
 }
 
+/* Radio Groups */
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.radio-group label:hover {
+    background: #f8f9fa;
+}
+
+.radio-group input[type="radio"] {
+    margin: 0;
+}
+
 /* Select Styles */
 select {
     padding: 0.5rem;

@@ -45,9 +45,9 @@ function populateForm(geoMeta) {
     // Clear existing road lines
     clearRoadLines();
     
-    // Populate checkboxes
-    populateCheckboxes('driving-side', geoMeta.driving_side);
-    populateCheckboxes('hemisphere', geoMeta.hemisphere);
+    // Populate radio buttons and checkboxes
+    populateRadioButtons('driving-side', geoMeta.driving_side);
+    populateRadioButtons('hemisphere', geoMeta.hemisphere);
     populateCheckboxes('road-quality', geoMeta.road_quality);
     populateCheckboxes('soil-color', geoMeta.soil_color);
     
@@ -79,6 +79,18 @@ function populateCheckboxes(name, values) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
     checkboxes.forEach(checkbox => {
         checkbox.checked = values.includes(checkbox.value);
+    });
+}
+
+/**
+ * Populate radio button groups
+ */
+function populateRadioButtons(name, values) {
+    if (!values || !Array.isArray(values) || values.length === 0) return;
+    
+    const radioButtons = document.querySelectorAll(`input[name="${name}"]`);
+    radioButtons.forEach(radio => {
+        radio.checked = values.includes(radio.value);
     });
 }
 
@@ -189,8 +201,8 @@ function collectFormData() {
     const formData = new FormData(form);
     
     const geoMeta = {
-        driving_side: collectCheckboxValues('driving-side'),
-        hemisphere: collectCheckboxValues('hemisphere'),
+        driving_side: collectRadioValue('driving-side'),
+        hemisphere: collectRadioValue('hemisphere'),
         road_lines: collectRoadLines(),
         road_quality: collectCheckboxValues('road-quality'),
         has_official_coverage: collectSelectValue('official-coverage'),
@@ -210,6 +222,14 @@ function collectCheckboxValues(name) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
     const values = Array.from(checkboxes).map(cb => cb.value);
     return values.length > 0 ? values : null;
+}
+
+/**
+ * Collect radio button value
+ */
+function collectRadioValue(name) {
+    const radio = document.querySelector(`input[name="${name}"]:checked`);
+    return radio ? [radio.value] : null;
 }
 
 /**
