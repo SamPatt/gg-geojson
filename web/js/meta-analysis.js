@@ -6,6 +6,7 @@ let metaAnalysisMode = false;
 let currentAnalysisField = null;
 let metaValueLabels = [];
 let currentSelectedMeta = null;
+let analysisVisible = false;
 
 /**
  * Initialize meta analysis functionality
@@ -63,10 +64,14 @@ function initMetaAnalysis() {
         }
     });
     
-    // Analyze meta button click
+    // Analyze meta button click (toggle)
     analyzeMetaBtn.addEventListener('click', function() {
         if (currentSelectedMeta) {
-            startMetaAnalysis(currentSelectedMeta.field, currentSelectedMeta.name);
+            if (analysisVisible) {
+                hideMetaAnalysis();
+            } else {
+                showMetaAnalysis();
+            }
         }
     });
     
@@ -99,6 +104,9 @@ function setSelectedMeta(field, fieldName) {
     
     // Hide select meta button
     document.getElementById('select-meta-btn').style.display = 'none';
+    
+    // Automatically start meta analysis
+    startMetaAnalysis(field, fieldName);
 }
 
 /**
@@ -106,6 +114,7 @@ function setSelectedMeta(field, fieldName) {
  */
 function clearSelectedMeta() {
     currentSelectedMeta = null;
+    analysisVisible = false;
     
     // Hide selected meta display
     document.getElementById('selected-meta-display').style.display = 'none';
@@ -114,8 +123,17 @@ function clearSelectedMeta() {
     document.getElementById('edit-meta-btn').disabled = true;
     document.getElementById('analyze-meta-btn').disabled = true;
     
+    // Reset analyze button text
+    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Analyze Meta';
+    
     // Show select meta button
     document.getElementById('select-meta-btn').style.display = 'flex';
+    
+    // Hide analysis results
+    document.getElementById('meta-analysis-results').style.display = 'none';
+    
+    // Reset map visualization
+    resetMapForMetaAnalysis();
 }
 
 /**
@@ -124,10 +142,14 @@ function clearSelectedMeta() {
 function startMetaAnalysis(field, fieldName) {
     metaAnalysisMode = true;
     currentAnalysisField = field;
+    analysisVisible = true;
     
     // Show analysis results
     document.getElementById('meta-analysis-results').style.display = 'block';
     document.getElementById('selected-analysis-field').textContent = fieldName;
+    
+    // Update analyze button text
+    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
     
     // Analyze the data
     analyzeMetaField(field);
@@ -137,14 +159,56 @@ function startMetaAnalysis(field, fieldName) {
 }
 
 /**
+ * Show meta analysis
+ */
+function showMetaAnalysis() {
+    if (!currentSelectedMeta) return;
+    
+    analysisVisible = true;
+    
+    // Show analysis results
+    document.getElementById('meta-analysis-results').style.display = 'block';
+    document.getElementById('selected-analysis-field').textContent = currentSelectedMeta.name;
+    
+    // Update analyze button text
+    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
+    
+    // Analyze the data
+    analyzeMetaField(currentSelectedMeta.field);
+    
+    // Update map visualization
+    updateMapForMetaAnalysis(currentSelectedMeta.field);
+}
+
+/**
+ * Hide meta analysis
+ */
+function hideMetaAnalysis() {
+    analysisVisible = false;
+    
+    // Hide analysis results
+    document.getElementById('meta-analysis-results').style.display = 'none';
+    
+    // Update analyze button text
+    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Show Analysis';
+    
+    // Reset map visualization
+    resetMapForMetaAnalysis();
+}
+
+/**
  * Cancel meta analysis mode
  */
 function cancelMetaAnalysis() {
     metaAnalysisMode = false;
     currentAnalysisField = null;
+    analysisVisible = false;
     
     // Hide analysis results
     document.getElementById('meta-analysis-results').style.display = 'none';
+    
+    // Reset analyze button text
+    document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Analyze Meta';
     
     // Reset map visualization
     resetMapForMetaAnalysis();
