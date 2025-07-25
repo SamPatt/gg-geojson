@@ -98,9 +98,8 @@ function setSelectedMeta(field, fieldName) {
     document.getElementById('selected-meta-display').style.display = 'flex';
     document.getElementById('current-selected-meta').textContent = fieldName;
     
-    // Enable action buttons
-    document.getElementById('edit-meta-btn').disabled = false;
-    document.getElementById('analyze-meta-btn').disabled = false;
+    // Show action buttons
+    document.getElementById('meta-actions').style.display = 'flex';
     
     // Hide select meta button
     document.getElementById('select-meta-btn').style.display = 'none';
@@ -119,9 +118,8 @@ function clearSelectedMeta() {
     // Hide selected meta display
     document.getElementById('selected-meta-display').style.display = 'none';
     
-    // Disable action buttons
-    document.getElementById('edit-meta-btn').disabled = true;
-    document.getElementById('analyze-meta-btn').disabled = true;
+    // Hide action buttons
+    document.getElementById('meta-actions').style.display = 'none';
     
     // Reset analyze button text
     document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Analyze Meta';

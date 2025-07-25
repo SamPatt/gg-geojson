@@ -463,6 +463,21 @@ select:focus {
     margin-bottom: 1rem;
 }
 
+/* Centered Select Meta Button */
+.metas-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+#select-meta-btn {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    min-width: 200px;
+}
+
 /* Mass Edit Form */
 .mass-edit-form {
     margin-top: 1rem;
