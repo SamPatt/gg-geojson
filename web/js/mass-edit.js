@@ -17,8 +17,18 @@ function initMassEdit() {
     
     // Edit meta button click
     editMetaBtn.addEventListener('click', function() {
-        if (currentSelectedMeta) {
-            startMassEdit(currentSelectedMeta.field, currentSelectedMeta.name);
+        console.log('Edit Meta button clicked');
+        console.log('window.MetaAnalysis:', window.MetaAnalysis);
+        
+        // Get the selected meta from the meta-analysis module
+        if (window.MetaAnalysis && window.MetaAnalysis.getCurrentSelectedMeta) {
+            const selectedMeta = window.MetaAnalysis.getCurrentSelectedMeta();
+            console.log('Selected meta:', selectedMeta);
+            if (selectedMeta) {
+                startMassEdit(selectedMeta.field, selectedMeta.name);
+            }
+        } else {
+            console.error('MetaAnalysis module not available or getCurrentSelectedMeta not found');
         }
     });
     
@@ -489,6 +499,16 @@ function initMassSelectionControls() {
         updateSelectionCount();
     });
 }
+
+// Export functions for use in other modules
+window.MassEdit = {
+    cancelMassEditMode,
+    startMassEdit,
+    generateMassEditField,
+    collectMassEditValue,
+    resetMapInteraction,
+    clearMassSelectionStyling
+};
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

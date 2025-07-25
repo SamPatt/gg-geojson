@@ -134,6 +134,11 @@ function clearSelectedMeta() {
     
     // Reset map visualization
     resetMapForMetaAnalysis();
+    
+    // Also clear any active mass edit mode
+    if (window.MassEdit && typeof window.MassEdit.cancelMassEditMode === 'function') {
+        window.MassEdit.cancelMassEditMode();
+    }
 }
 
 /**
@@ -215,7 +220,7 @@ function cancelMetaAnalysis() {
 }
 
 /**
- * Cancel mass edit mode and clear selected meta
+ * Cancel mass edit mode
  */
 function cancelMassEditMode() {
     massEditMode = false;
@@ -227,14 +232,13 @@ function cancelMassEditMode() {
     document.getElementById('mass-edit-form').style.display = 'none';
     
     // Reset map interaction
-    resetMapInteraction();
+    if (window.MassEdit && typeof window.MassEdit.resetMapInteraction === 'function') {
+        window.MassEdit.resetMapInteraction();
+    }
     
     // Clear any mass selection styling
-    clearMassSelectionStyling();
-    
-    // Only clear selected meta if we're not editing a specific country
-    if (!window.GeoMetaApp.currentEditingFeature) {
-        clearSelectedMeta();
+    if (window.MassEdit && typeof window.MassEdit.clearMassSelectionStyling === 'function') {
+        window.MassEdit.clearMassSelectionStyling();
     }
 }
 
@@ -536,6 +540,22 @@ function resetMapForMetaAnalysis() {
     // Reset map styling
     updateMapStyling();
 }
+
+/**
+ * Get current selected meta (for use by other modules)
+ */
+function getCurrentSelectedMeta() {
+    return currentSelectedMeta;
+}
+
+// Export functions for use in other modules
+window.MetaAnalysis = {
+    getCurrentSelectedMeta,
+    setSelectedMeta,
+    clearSelectedMeta,
+    startMetaAnalysis,
+    cancelMetaAnalysis
+};
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
