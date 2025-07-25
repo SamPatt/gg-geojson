@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GeoMeta Schema",
+  "description": "Schema for GeoMeta properties in GeoJSON features",
+  "type": "object",
+  "properties": {
+    "driving_side": {
+      "type": ["array", "null"],
+      "description": "Which side of the road vehicles drive on",
+      "items": {
+        "type": "string",
+        "enum": ["left", "right"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "hemisphere": {
+      "type": ["array", "null"],
+      "description": "Hemisphere(s) the country is located in",
+      "items": {
+        "type": "string",
+        "enum": ["N", "S", "E"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "road_lines": {
+      "type": ["object", "null"],
+      "description": "Road line markings configuration",
+      "properties": {
+        "inner": {
+          "type": "array",
+          "description": "Inner road line markings",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "string",
+                "enum": ["single", "double", "triple"],
+                "description": "Number of lines"
+              },
+              "color": {
+                "type": "string",
+                "enum": ["white", "yellow", "other"],
+                "description": "Color of the road lines"
+              },
+              "pattern": {
+                "type": "string",
+                "enum": ["solid", "dashed", "zigzag"],
+                "description": "Pattern of the road lines"
+              }
+            },
+            "required": ["number", "color", "pattern"],
+            "additionalProperties": false
+          },
+          "minItems": 0
+        },
+        "outer": {
+          "type": "array",
+          "description": "Outer road line markings",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "string",
+                "enum": ["single", "double", "triple"],
+                "description": "Number of lines"
+              },
+              "color": {
+                "type": "string",
+                "enum": ["white", "yellow", "other"],
+                "description": "Color of the road lines"
+              },
+              "pattern": {
+                "type": "string",
+                "enum": ["solid", "dashed", "zigzag"],
+                "description": "Pattern of the road lines"
+              }
+            },
+            "required": ["number", "color", "pattern"],
+            "additionalProperties": false
+          },
+          "minItems": 0
+        }
+      },
+      "required": ["inner", "outer"],
+      "additionalProperties": false
+    },
+    "road_quality": {
+      "type": ["array", "null"],
+      "description": "Quality of roads in the country",
+      "items": {
+        "type": "string",
+        "enum": ["maintained", "poor"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+            "has_official_coverage": {
+          "type": ["boolean", "null"],
+          "description": "Whether the country has official street view coverage"
+        },
+    "arid_lush": {
+      "type": ["object", "null"],
+      "description": "Scale from arid to lush vegetation (quintile scale 1-5)",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Minimum value on the arid-lush scale (1=very arid, 5=very lush)"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Maximum value on the arid-lush scale (1=very arid, 5=very lush)"
+        }
+      },
+      "required": ["min", "max"],
+      "additionalProperties": false
+    },
+    "cold_hot": {
+      "type": ["object", "null"],
+      "description": "Scale from cold to hot climate (quintile scale 1-5)",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Minimum value on the cold-hot scale (1=very cold, 5=very hot)"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Maximum value on the cold-hot scale (1=very cold, 5=very hot)"
+        }
+      },
+      "required": ["min", "max"],
+      "additionalProperties": false
+    },
+    "flat_mountainous": {
+      "type": ["object", "null"],
+      "description": "Scale from flat to mountainous terrain (quintile scale 1-5)",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Minimum value on the flat-mountainous scale (1=very flat, 5=very mountainous)"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Maximum value on the flat-mountainous scale (1=very flat, 5=very mountainous)"
+        }
+      },
+      "required": ["min", "max"],
+      "additionalProperties": false
+    },
+    "soil_color": {
+      "type": ["array", "null"],
+      "description": "Colors of soil found in the country",
+      "items": {
+        "type": "string",
+        "enum": ["red", "brown", "gray", "black", "other"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "driving_side",
+    "hemisphere",
+    "road_lines",
+    "road_quality",
+    "has_official_coverage",
+    "arid_lush",
+    "cold_hot",
+    "flat_mountainous",
+    "soil_color"
+  ],
+  "additionalProperties": false
+} 

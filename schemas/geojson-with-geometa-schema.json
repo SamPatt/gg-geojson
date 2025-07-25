@@ -1,0 +1,223 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GeoJSON with GeoMeta Schema",
+  "description": "Complete GeoJSON schema including GeoMeta properties",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["FeatureCollection"],
+      "description": "Type of GeoJSON object"
+    },
+    "features": {
+      "type": "array",
+      "description": "Array of GeoJSON features",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["Feature"],
+            "description": "Type of feature"
+          },
+          "geometry": {
+            "type": "object",
+            "description": "Geometry of the feature",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["Polygon", "MultiPolygon"],
+                "description": "Type of geometry"
+              },
+              "coordinates": {
+                "type": "array",
+                "description": "Array of coordinate arrays defining the geometry"
+              }
+            },
+            "required": ["type", "coordinates"],
+            "additionalProperties": false
+          },
+          "properties": {
+            "type": "object",
+            "description": "Properties of the feature",
+            "properties": {
+              "ADMIN": {
+                "type": "string",
+                "description": "Country/territory name"
+              },
+              "ISO_A3": {
+                "type": "string",
+                "description": "ISO 3166-1 alpha-3 country code",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "ISO_A2": {
+                "type": "string",
+                "description": "ISO 3166-1 alpha-2 country code",
+                "pattern": "^[A-Z]{2}$"
+              },
+              "geo_meta": {
+                "$ref": "#/definitions/geoMeta"
+              }
+            },
+            "required": ["ADMIN", "ISO_A3", "ISO_A2"],
+            "additionalProperties": true
+          }
+        },
+        "required": ["type", "geometry", "properties"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["type", "features"],
+  "additionalProperties": false,
+  "definitions": {
+    "geoMeta": {
+      "type": "object",
+      "description": "GeoMeta properties",
+      "properties": {
+        "driving_side": {
+          "type": ["array", "null"],
+          "description": "Which side of the road vehicles drive on",
+          "items": {
+            "type": "string",
+            "enum": ["left", "right"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "hemisphere": {
+          "type": ["array", "null"],
+          "description": "Hemisphere(s) the country is located in",
+          "items": {
+            "type": "string",
+            "enum": ["N", "S", "E"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "road_lines": {
+          "type": ["object", "null"],
+          "description": "Road line markings configuration",
+          "properties": {
+            "inner": {
+              "type": "array",
+              "description": "Inner road line markings",
+              "items": {
+                "$ref": "#/definitions/roadLine"
+              },
+              "minItems": 0
+            },
+            "outer": {
+              "type": "array",
+              "description": "Outer road line markings",
+              "items": {
+                "$ref": "#/definitions/roadLine"
+              },
+              "minItems": 0
+            }
+          },
+          "required": ["inner", "outer"],
+          "additionalProperties": false
+        },
+        "road_quality": {
+          "type": ["array", "null"],
+          "description": "Quality of roads in the country",
+          "items": {
+            "type": "string",
+            "enum": ["maintained", "poor"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "has_official_coverage": {
+          "type": ["boolean", "null"],
+          "description": "Whether the country has official street view coverage"
+        },
+        "arid_lush": {
+          "anyOf": [
+            {"$ref": "#/definitions/quintileScale"},
+            {"type": "null"}
+          ]
+        },
+        "cold_hot": {
+          "anyOf": [
+            {"$ref": "#/definitions/quintileScale"},
+            {"type": "null"}
+          ]
+        },
+        "flat_mountainous": {
+          "anyOf": [
+            {"$ref": "#/definitions/quintileScale"},
+            {"type": "null"}
+          ]
+        },
+        "soil_color": {
+          "type": ["array", "null"],
+          "description": "Colors of soil found in the country",
+          "items": {
+            "type": "string",
+            "enum": ["red", "brown", "gray", "black", "other"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "driving_side",
+        "hemisphere",
+        "road_lines",
+        "road_quality",
+        "has_official_coverage",
+        "arid_lush",
+        "cold_hot",
+        "flat_mountainous",
+        "soil_color"
+      ],
+      "additionalProperties": false
+    },
+    "roadLine": {
+      "type": "object",
+      "description": "Individual road line configuration",
+      "properties": {
+        "number": {
+          "type": "string",
+          "enum": ["single", "double", "triple"],
+          "description": "Number of lines"
+        },
+        "color": {
+          "type": "string",
+          "enum": ["white", "yellow", "other"],
+          "description": "Color of the road lines"
+        },
+        "pattern": {
+          "type": "string",
+          "enum": ["solid", "dashed", "zigzag"],
+          "description": "Pattern of the road lines"
+        }
+      },
+      "required": ["number", "color", "pattern"],
+      "additionalProperties": false
+    },
+    "quintileScale": {
+      "type": "object",
+      "description": "Quintile scale object with min and max values (1-5)",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Minimum value on the scale"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Maximum value on the scale"
+        }
+      },
+      "required": ["min", "max"],
+      "additionalProperties": false
+    }
+  }
+} 
