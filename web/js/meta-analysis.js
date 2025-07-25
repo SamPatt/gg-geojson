@@ -168,8 +168,10 @@ function cancelMassEditMode() {
     // Clear any mass selection styling
     clearMassSelectionStyling();
     
-    // Clear selected meta
-    clearSelectedMeta();
+    // Only clear selected meta if we're not editing a specific country
+    if (!window.GeoMetaApp.currentEditingFeature) {
+        clearSelectedMeta();
+    }
 }
 
 /**

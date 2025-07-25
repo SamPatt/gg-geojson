@@ -9,6 +9,7 @@ let currentEditingFeature = null;
  */
 function openEditor(feature) {
     currentEditingFeature = feature;
+    window.GeoMetaApp.currentEditingFeature = feature;
     
     // Show editor panel
     document.getElementById('geometa-editor').style.display = 'block';
@@ -36,6 +37,7 @@ function closeEditor() {
     document.getElementById('close-editor-btn').style.display = 'none';
     
     currentEditingFeature = null;
+    window.GeoMetaApp.currentEditingFeature = null;
     document.querySelector('.panel-header h3').textContent = 'GeoMeta Editor';
 }
 
