@@ -1,0 +1,206 @@
+/* Map Container */
+.map-container {
+    flex: 1;
+    position: relative;
+    background: #e8f4f8;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Map Controls */
+.map-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.map-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    background: white;
+    color: #333;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-btn:hover {
+    background: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.map-btn:active {
+    transform: translateY(1px);
+}
+
+/* Country Selection Styles */
+.country-selected {
+    fill: #3498db !important;
+    stroke: #2980b9 !important;
+    stroke-width: 2px !important;
+}
+
+.country-hover {
+    fill: #e74c3c !important;
+    stroke: #c0392b !important;
+    stroke-width: 1px !important;
+    cursor: pointer;
+}
+
+.country-default {
+    fill: #95a5a6;
+    stroke: #7f8c8d;
+    stroke-width: 0.5px;
+    transition: all 0.2s;
+}
+
+.country-default:hover {
+    fill: #e74c3c;
+    stroke: #c0392b;
+    stroke-width: 1px;
+    cursor: pointer;
+}
+
+/* Popup Styles */
+.leaflet-popup-content {
+    margin: 8px 12px;
+    font-size: 14px;
+}
+
+.country-popup {
+    min-width: 200px;
+}
+
+.country-popup h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.country-popup .geometa-info {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ecf0f1;
+}
+
+.country-popup .geometa-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.country-popup .geometa-info p {
+    margin: 0 0 4px 0;
+    font-size: 13px;
+}
+
+.country-popup .edit-btn {
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.country-popup .edit-btn:hover {
+    background: #2980b9;
+}
+
+/* Loading Overlay */
+.map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.map-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Map Legend */
+.map-legend {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-size: 12px;
+}
+
+.map-legend h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Responsive Map */
+@media (max-width: 768px) {
+    .map-controls {
+        top: 5px;
+        right: 5px;
+    }
+    
+    .map-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+    
+    .map-legend {
+        bottom: 10px;
+        left: 10px;
+        font-size: 11px;
+    }
+} 

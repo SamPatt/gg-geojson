@@ -84,4 +84,5 @@ Use the files in `data/geometa/` for browser-based editing:
 - All fields support null values for gradual data entry
 - Quintile scales use 1-5 range (1=lowest, 5=highest)
 - Arrays support multiple values per country
-- Original files are never modified, only copied to geometa folder 
+- Original files are never modified, only copied to geometa folder
+- Large original GeoJSON files are excluded from git (see .gitignore) 

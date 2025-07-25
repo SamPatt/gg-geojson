@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoMeta Editor</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>GeoMeta Editor</h1>
+            <div class="file-controls">
+                <button id="load-file-btn" class="btn">Load File</button>
+                <input type="file" id="file-input" accept=".geojson" style="display: none;">
+                <button id="save-file-btn" class="btn">Save File</button>
+                <span id="current-file">No file loaded</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button id="zoom-in-btn" class="map-btn">+</button>
+                    <button id="zoom-out-btn" class="map-btn">-</button>
+                    <button id="fit-bounds-btn" class="map-btn">Fit All</button>
+                </div>
+            </div>
+
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h3>GeoMeta Editor</h3>
+                    <button id="close-editor-btn" class="btn-small">×</button>
+                </div>
+                
+                <div class="panel-content">
+                    <div id="country-info">
+                        <p>Select a country on the map to edit its GeoMeta data.</p>
+                    </div>
+                    
+                    <div id="geometa-editor" style="display: none;">
+                        <form id="geometa-form">
+                            <!-- Driving Side -->
+                            <div class="form-group">
+                                <label for="driving-side">Driving Side:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="driving-side" value="left"> Left</label>
+                                    <label><input type="checkbox" name="driving-side" value="right"> Right</label>
+                                </div>
+                            </div>
+
+                            <!-- Hemisphere -->
+                            <div class="form-group">
+                                <label for="hemisphere">Hemisphere:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="hemisphere" value="N"> North</label>
+                                    <label><input type="checkbox" name="hemisphere" value="S"> South</label>
+                                    <label><input type="checkbox" name="hemisphere" value="E"> East</label>
+                                </div>
+                            </div>
+
+                            <!-- Road Lines -->
+                            <div class="form-group">
+                                <label>Road Lines:</label>
+                                <div class="road-lines-section">
+                                    <h4>Inner Lines</h4>
+                                    <div id="inner-lines-container">
+                                        <button type="button" class="add-line-btn" data-type="inner">+ Add Inner Line</button>
+                                    </div>
+                                    
+                                    <h4>Outer Lines</h4>
+                                    <div id="outer-lines-container">
+                                        <button type="button" class="add-line-btn" data-type="outer">+ Add Outer Line</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Road Quality -->
+                            <div class="form-group">
+                                <label for="road-quality">Road Quality:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="road-quality" value="maintained"> Maintained</label>
+                                    <label><input type="checkbox" name="road-quality" value="poor"> Poor</label>
+                                </div>
+                            </div>
+
+                            <!-- Official Coverage -->
+                            <div class="form-group">
+                                <label for="official-coverage">Has Official Coverage:</label>
+                                <select name="official-coverage">
+                                    <option value="">Not Set</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+
+                            <!-- Climate Scales -->
+                            <div class="form-group">
+                                <label for="arid-lush">Arid to Lush (1-5):</label>
+                                <div class="scale-inputs">
+                                    <input type="number" name="arid-lush-min" min="1" max="5" placeholder="Min">
+                                    <span>to</span>
+                                    <input type="number" name="arid-lush-max" min="1" max="5" placeholder="Max">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cold-hot">Cold to Hot (1-5):</label>
+                                <div class="scale-inputs">
+                                    <input type="number" name="cold-hot-min" min="1" max="5" placeholder="Min">
+                                    <span>to</span>
+                                    <input type="number" name="cold-hot-max" min="1" max="5" placeholder="Max">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="flat-mountainous">Flat to Mountainous (1-5):</label>
+                                <div class="scale-inputs">
+                                    <input type="number" name="flat-mountainous-min" min="1" max="5" placeholder="Min">
+                                    <span>to</span>
+                                    <input type="number" name="flat-mountainous-max" min="1" max="5" placeholder="Max">
+                                </div>
+                            </div>
+
+                            <!-- Soil Color -->
+                            <div class="form-group">
+                                <label for="soil-color">Soil Color:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="soil-color" value="red"> Red</label>
+                                    <label><input type="checkbox" name="soil-color" value="brown"> Brown</label>
+                                    <label><input type="checkbox" name="soil-color" value="gray"> Gray</label>
+                                    <label><input type="checkbox" name="soil-color" value="black"> Black</label>
+                                    <label><input type="checkbox" name="soil-color" value="other"> Other</label>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="button" class="btn" id="reset-form-btn">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="app-footer">
+            <div class="status-info">
+                <span id="status-message">Ready</span>
+                <span id="country-count"></span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/utils.js"></script>
+    <script src="js/validator.js"></script>
+    <script src="js/file-handler.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
