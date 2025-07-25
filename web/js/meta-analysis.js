@@ -546,8 +546,26 @@ function resetMapForMetaAnalysis() {
     // Clear labels
     clearMetaValueLabels();
     
-    // Reset map styling
-    updateMapStyling();
+    // Reset map to default gray styling (not data-based styling)
+    if (window.GeoMetaApp.geoJsonLayer) {
+        window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+            // Don't override selection
+            if (layer === window.selectedCountry) return;
+            
+            const style = {
+                fillColor: '#95a5a6',
+                weight: 0.5,
+                color: '#7f8c8d',
+                fillOpacity: 0.3
+            };
+            
+            // Store as original color
+            if (window.originalColors) {
+                window.originalColors.set(layer, style);
+            }
+            layer.setStyle(style);
+        });
+    }
 }
 
 /**

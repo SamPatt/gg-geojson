@@ -3,6 +3,8 @@
  */
 
 let currentLegend = null;
+let selectedLegendValues = new Set();
+let currentLegendField = null;
 let colorSchemes = {
     // Categorical color schemes
     categorical: [
@@ -85,7 +87,7 @@ function createLegend(fieldName, fieldType, possibleValues) {
             const color = colorSchemes.scale[i - 1];
             const label = getScaleLabel(i);
             legendHTML += `
-                <div class="legend-item">
+                <div class="legend-item" data-value="${i}" data-field="${fieldName}" data-type="scale">
                     <div class="legend-color" style="background-color: ${color}"></div>
                     <span>${label}</span>
                 </div>
@@ -100,7 +102,7 @@ function createLegend(fieldName, fieldType, possibleValues) {
             const color = getCategoricalColor(value, fieldName);
             const label = formatValue(value);
             legendHTML += `
-                <div class="legend-item">
+                <div class="legend-item" data-value="${value}" data-field="${fieldName}" data-type="categorical">
                     <div class="legend-color" style="background-color: ${color}"></div>
                     <span>${label}</span>
                 </div>
@@ -111,12 +113,256 @@ function createLegend(fieldName, fieldType, possibleValues) {
     
     legendContainer.innerHTML = legendHTML;
     
+    // Add interactive event listeners
+    addLegendInteractivity(legendContainer, fieldName, fieldType, possibleValues);
+    
     // Add to map
     const mapContainer = document.getElementById('map');
     mapContainer.appendChild(legendContainer);
     
     currentLegend = legendContainer;
     console.log('Legend created for', fieldName);
+}
+
+/**
+ * Add interactive functionality to legend items
+ */
+function addLegendInteractivity(legendContainer, fieldName, fieldType, possibleValues) {
+    const legendItems = legendContainer.querySelectorAll('.legend-item');
+    
+    legendItems.forEach(item => {
+        const value = item.dataset.value;
+        const field = item.dataset.field;
+        const type = item.dataset.type;
+        
+        // Hover effects - only when no toggles are active
+        item.addEventListener('mouseenter', function() {
+            // Only show hover effects if no toggles are active
+            if (selectedLegendValues.size === 0) {
+                highlightLegendValue(field, value, type, true);
+            }
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            // Only unhighlight if no toggles are active
+            if (selectedLegendValues.size === 0) {
+                highlightLegendValue(field, value, type, false);
+            }
+        });
+        
+        // Click effects - toggle selection
+        item.addEventListener('click', function() {
+            toggleLegendValue(field, value, type, item);
+        });
+    });
+}
+
+/**
+ * Highlight or unhighlight a specific value in the legend and on the map
+ */
+function highlightLegendValue(field, value, type, highlight) {
+    if (!window.GeoMetaApp.geoJsonLayer) return;
+    
+    console.log('Highlighting:', field, value, type, highlight);
+    
+    // Update legend item appearance
+    const legendItem = document.querySelector(`[data-field="${field}"][data-value="${value}"]`);
+    if (legendItem) {
+        if (highlight) {
+            legendItem.style.opacity = '0.7';
+            legendItem.style.transform = 'scale(1.05)';
+        } else {
+            legendItem.style.opacity = '1';
+            legendItem.style.transform = 'scale(1)';
+        }
+    }
+    
+    // Update map colors
+    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+        const feature = layer.feature;
+        const geoMeta = feature.properties.geo_meta;
+        const fieldValue = geoMeta && geoMeta[field];
+        
+        // Don't override selection
+        if (layer === window.selectedCountry) return;
+        
+        let shouldHighlight = false;
+        
+        if (type === 'scale') {
+            // For scale values, check if the country's value matches the hovered value
+            if (fieldValue && typeof fieldValue === 'object' && fieldValue.min && fieldValue.max) {
+                const avg = Math.round((fieldValue.min + fieldValue.max) / 2);
+                shouldHighlight = (avg === parseInt(value));
+            }
+        } else {
+            // For categorical values, handle null values and array/string inconsistencies
+            if (value === 'null') {
+                shouldHighlight = (fieldValue === null);
+            } else {
+                // Handle both string and array formats
+                if (Array.isArray(fieldValue)) {
+                    shouldHighlight = fieldValue.includes(value);
+                } else {
+                    shouldHighlight = (fieldValue === value);
+                }
+            }
+        }
+        
+        console.log('Country:', feature.properties.ADMIN, 'FieldValue:', fieldValue, 'ShouldHighlight:', shouldHighlight);
+        
+        if (shouldHighlight) {
+            if (highlight) {
+                // Highlight with brighter color
+                const originalColor = window.originalColors.get(layer);
+                if (originalColor) {
+                    layer.setStyle({
+                        ...originalColor,
+                        fillOpacity: 1.0,
+                        weight: 2
+                    });
+                }
+            } else {
+                // Return to original color
+                const originalColor = window.originalColors.get(layer);
+                if (originalColor) {
+                    layer.setStyle(originalColor);
+                }
+            }
+        } else if (highlight) {
+            // Dim other countries
+            const originalColor = window.originalColors.get(layer);
+            if (originalColor) {
+                layer.setStyle({
+                    ...originalColor,
+                    fillOpacity: 0.3
+                });
+            }
+        } else {
+            // Return to original color
+            const originalColor = window.originalColors.get(layer);
+            if (originalColor) {
+                layer.setStyle(originalColor);
+            }
+        }
+    });
+}
+
+/**
+ * Toggle selection of a legend value
+ */
+function toggleLegendValue(field, value, type, item) {
+    console.log('Toggling legend value:', field, value, type);
+    console.log('Current selected values:', selectedLegendValues);
+    
+    if (selectedLegendValues.has(value)) {
+        // Deselect
+        selectedLegendValues.delete(value);
+        item.classList.remove('selected');
+        console.log('Deselected:', value);
+        
+        // If no values are selected, restore all original colors
+        if (selectedLegendValues.size === 0) {
+            console.log('No values selected, restoring all colors');
+            restoreAllLegendColors();
+        } else {
+            // Update selection display
+            console.log('Updating selection display');
+            updateLegendSelection();
+        }
+    } else {
+        // Select
+        selectedLegendValues.add(value);
+        item.classList.add('selected');
+        currentLegendField = field;
+        console.log('Selected:', value);
+        console.log('Updated selected values:', selectedLegendValues);
+        
+        // Update selection display
+        updateLegendSelection();
+    }
+}
+
+/**
+ * Update the map to show selected legend values
+ */
+function updateLegendSelection() {
+    if (!window.GeoMetaApp.geoJsonLayer) return;
+    
+    console.log('Updating legend selection for values:', selectedLegendValues);
+    
+    // If no toggles are active, restore original meta colors
+    if (selectedLegendValues.size === 0) {
+        restoreAllLegendColors();
+        return;
+    }
+    
+    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+        const feature = layer.feature;
+        const geoMeta = feature.properties.geo_meta;
+        const fieldValue = geoMeta && geoMeta[currentLegendField];
+        
+        // Don't override selection
+        if (layer === window.selectedCountry) return;
+        
+        let isSelected = false;
+        
+        selectedLegendValues.forEach(selectedValue => {
+            if (selectedValue === 'null') {
+                isSelected = isSelected || (fieldValue === null);
+            } else if (typeof selectedValue === 'number' || !isNaN(parseInt(selectedValue))) {
+                // Scale value
+                const numValue = typeof selectedValue === 'number' ? selectedValue : parseInt(selectedValue);
+                if (fieldValue && typeof fieldValue === 'object' && fieldValue.min && fieldValue.max) {
+                    const avg = Math.round((fieldValue.min + fieldValue.max) / 2);
+                    isSelected = isSelected || (avg === numValue);
+                }
+            } else {
+                // Categorical value - handle both string and array formats
+                if (Array.isArray(fieldValue)) {
+                    isSelected = isSelected || fieldValue.includes(selectedValue);
+                } else {
+                    isSelected = isSelected || (fieldValue === selectedValue);
+                }
+            }
+        });
+        
+        console.log('Country:', feature.properties.ADMIN, 'FieldValue:', fieldValue, 'IsSelected:', isSelected);
+        
+        if (isSelected) {
+            // Show selected countries in blue
+            layer.setStyle({
+                fillColor: '#3498db',
+                weight: 2,
+                color: '#2980b9',
+                fillOpacity: 0.8
+            });
+        } else {
+            // Show non-selected countries in gray
+            layer.setStyle({
+                fillColor: '#95a5a6',
+                weight: 0.5,
+                color: '#7f8c8d',
+                fillOpacity: 0.3
+            });
+        }
+    });
+}
+
+/**
+ * Restore all countries to their original legend colors
+ */
+function restoreAllLegendColors() {
+    if (!window.GeoMetaApp.geoJsonLayer) return;
+    
+    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
+        // Don't override selection
+        if (layer === window.selectedCountry) return;
+        
+        const originalColor = window.originalColors.get(layer);
+        if (originalColor) {
+            layer.setStyle(originalColor);
+        }
+    });
 }
 
 /**
@@ -166,9 +412,19 @@ function updateMapColors(fieldName, fieldType, possibleValues) {
  */
 function clearLegend() {
     if (currentLegend) {
+        // Remove selected class from all legend items
+        const selectedItems = currentLegend.querySelectorAll('.legend-item.selected');
+        selectedItems.forEach(item => {
+            item.classList.remove('selected');
+        });
+        
         currentLegend.remove();
         currentLegend = null;
     }
+    
+    // Clear selection state
+    selectedLegendValues.clear();
+    currentLegendField = null;
     
     // Reset map to default styling
     if (window.GeoMetaApp.geoJsonLayer) {
@@ -245,6 +501,9 @@ window.Legend = {
     clearLegend,
     getColorForValue
 };
+
+// Export state for use by other modules
+window.selectedLegendValues = selectedLegendValues;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

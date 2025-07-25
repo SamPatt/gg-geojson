@@ -97,6 +97,11 @@ function loadGeoJSONData(geoJsonData) {
             
             // Add hover effects
             layer.on('mouseover', function(e) {
+                // Don't apply hover effects if legend toggles are active
+                if (window.selectedLegendValues && window.selectedLegendValues.size > 0) {
+                    return;
+                }
+                
                 if (e.target !== selectedCountry) {
                     // Store current color if not already stored
                     if (!originalColors.has(e.target)) {
@@ -120,6 +125,11 @@ function loadGeoJSONData(geoJsonData) {
             });
             
             layer.on('mouseout', function(e) {
+                // Don't apply hover effects if legend toggles are active
+                if (window.selectedLegendValues && window.selectedLegendValues.size > 0) {
+                    return;
+                }
+                
                 if (e.target !== selectedCountry) {
                     // Restore original color
                     const originalColor = originalColors.get(e.target);

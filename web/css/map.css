@@ -157,8 +157,8 @@
 /* Map Legend */
 .map-legend {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    top: 20px;
+    right: 80px;
     background: white;
     padding: 15px;
     border-radius: 6px;
@@ -215,6 +215,30 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.legend-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 2px 4px;
+    border: 2px solid transparent;
+}
+
+.legend-item:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.legend-item.selected {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+.legend-item.selected .legend-color {
+    border-color: white;
 }
 
 /* Mass Selection Controls */
