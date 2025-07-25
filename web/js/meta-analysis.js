@@ -130,6 +130,11 @@ function clearSelectedMeta() {
     // Hide analysis results
     document.getElementById('meta-analysis-results').style.display = 'none';
     
+    // Clear legend
+    if (window.Legend) {
+        window.Legend.clearLegend();
+    }
+    
     // Reset map visualization
     resetMapForMetaAnalysis();
     
@@ -154,6 +159,13 @@ function startMetaAnalysis(field, fieldName) {
     // Update analyze button text
     document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
     
+    // Get field schema for legend
+    const schema = window.DynamicMeta.getFieldSchema(field);
+    if (schema && window.Legend) {
+        // Update map colors and create legend
+        window.Legend.updateMapColors(field, schema.type, schema.possibleValues);
+    }
+    
     // Analyze the data
     analyzeMetaField(field);
     
@@ -176,6 +188,13 @@ function showMetaAnalysis() {
     // Update analyze button text
     document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Hide Analysis';
     
+    // Get field schema for legend
+    const schema = window.DynamicMeta.getFieldSchema(currentSelectedMeta.field);
+    if (schema && window.Legend) {
+        // Update map colors and create legend
+        window.Legend.updateMapColors(currentSelectedMeta.field, schema.type, schema.possibleValues);
+    }
+    
     // Analyze the data
     analyzeMetaField(currentSelectedMeta.field);
     
@@ -194,6 +213,11 @@ function hideMetaAnalysis() {
     
     // Update analyze button text
     document.getElementById('analyze-meta-btn').innerHTML = '<span class="btn-icon">📊</span>Show Analysis';
+    
+    // Clear legend
+    if (window.Legend) {
+        window.Legend.clearLegend();
+    }
     
     // Reset map visualization
     resetMapForMetaAnalysis();
@@ -378,35 +402,12 @@ function updateMapForMetaAnalysis(field) {
     // Clear existing labels
     clearMetaValueLabels();
     
+    // Don't override legend colors - let the legend system handle the styling
+    // Just add value labels
     window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
         const feature = layer.feature;
         const geoMeta = feature.properties.geo_meta;
         const fieldValue = geoMeta && geoMeta[field];
-        
-        // Determine styling
-        let style = {
-            fillColor: '#95a5a6',
-            weight: 0.5,
-            color: '#7f8c8d'
-        };
-        
-        if (fieldValue !== null && fieldValue !== undefined) {
-            style = {
-                fillColor: '#27ae60',
-                weight: 2,
-                color: '#229954'
-            };
-        } else {
-            style = {
-                fillColor: '#e74c3c',
-                weight: 2,
-                color: '#c0392b'
-            };
-        }
-        
-        // Apply styling
-        layer.setStyle(style);
-        layer.addTo(window.GeoMetaApp.map);
         
         // Add value label
         addMetaValueLabel(layer, field, fieldValue);
