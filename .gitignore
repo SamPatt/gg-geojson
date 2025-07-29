@@ -53,4 +53,6 @@ temp/
 # Large data files (can be regenerated)
 data/original/countries.geojson
 data/original/countries-original.geojson
-data/original/countries-simplified.geojson 
+data/original/countries-simplified.geojson
+
+ 

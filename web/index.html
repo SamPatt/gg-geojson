@@ -24,34 +24,42 @@
                 <button id="save-file-btn" class="btn">Save File</button>
                 <span id="current-file">No file loaded</span>
             </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button id="editor-tab" class="tab-btn active">Data Editor</button>
+                <button id="schema-tab" class="tab-btn">Schema Manager</button>
+            </div>
         </header>
 
         <!-- Main Content -->
         <main class="app-main">
-            <!-- Map Container -->
-            <div class="map-container">
-                <div id="map"></div>
-                <div class="map-controls">
-                    <button id="zoom-in-btn" class="map-btn">+</button>
-                    <button id="zoom-out-btn" class="map-btn">-</button>
-                    <button id="fit-bounds-btn" class="map-btn">Fit All</button>
-                </div>
-                
-                <!-- Mass Selection Controls -->
-                <div id="mass-selection-controls" class="mass-selection-controls" style="display: none;">
-                    <div class="selection-header">
-                        <span>Select Countries</span>
+            <!-- Data Editor Tab Content -->
+            <div id="editor-content" class="tab-content active">
+                <!-- Map Container -->
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <button id="zoom-in-btn" class="map-btn">+</button>
+                        <button id="zoom-out-btn" class="map-btn">-</button>
+                        <button id="fit-bounds-btn" class="map-btn">Fit All</button>
                     </div>
-                    <button id="select-all-btn" class="selection-btn">Select All</button>
-                    <button id="select-none-btn" class="selection-btn">Select None</button>
-                    <div class="selection-count">
-                        <span id="selected-count">0</span> selected
+                    
+                    <!-- Mass Selection Controls -->
+                    <div id="mass-selection-controls" class="mass-selection-controls" style="display: none;">
+                        <div class="selection-header">
+                            <span>Select Countries</span>
+                        </div>
+                        <button id="select-all-btn" class="selection-btn">Select All</button>
+                        <button id="select-none-btn" class="selection-btn">Select None</button>
+                        <div class="selection-count">
+                            <span id="selected-count">0</span> selected
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Editor Panel -->
-            <div class="editor-panel">
+                <!-- Editor Panel -->
+                <div class="editor-panel">
                 <div class="panel-header">
                     <h3>GeoMeta Editor</h3>
                     <button id="close-editor-btn" class="btn-small" style="display: none;">×</button>
@@ -162,6 +170,81 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Schema Manager Tab Content -->
+            <div id="schema-content" class="tab-content">
+                <div class="schema-container">
+                    <div class="schema-header">
+                        <h2>GeoMeta Schema Manager</h2>
+                        <div class="schema-controls">
+                            <button id="load-schema-btn" class="btn">Load Schema</button>
+                            <button id="save-schema-btn" class="btn">Save Schema</button>
+                            <button id="export-schema-btn" class="btn">Export to Files</button>
+                            <button id="add-field-btn" class="btn btn-primary">Add Field</button>
+                        </div>
+                    </div>
+                    
+                    <div class="schema-content">
+                        <div class="schema-viewer">
+                            <h3>Current Schema</h3>
+                            <div class="schema-json-container">
+                                <pre id="schema-json-display"></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="schema-editor">
+                            <h3>Schema Editor</h3>
+                            <div id="schema-fields-list" class="schema-fields-list">
+                                <!-- Dynamic schema fields will be listed here -->
+                            </div>
+                            
+                            <div id="field-editor" class="field-editor" style="display: none;">
+                                <div class="field-editor-header">
+                                    <h4 id="field-editor-title">Edit Field</h4>
+                                    <button id="close-field-editor" class="btn-small">×</button>
+                                </div>
+                                
+                                <div class="field-editor-content">
+                                    <div class="field-form">
+                                        <div class="form-group">
+                                            <label for="field-name">Field Name:</label>
+                                            <input type="text" id="field-name" class="form-input">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="field-type">Field Type:</label>
+                                            <select id="field-type" class="form-select">
+                                                <option value="string">String</option>
+                                                <option value="number">Number</option>
+                                                <option value="boolean">Boolean</option>
+                                                <option value="array">Array</option>
+                                                <option value="object">Object</option>
+                                                <option value="enum">Enum</option>
+                                                <option value="range">Range (min/max)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="field-description">Description:</label>
+                                            <textarea id="field-description" class="form-textarea" rows="3"></textarea>
+                                        </div>
+                                        
+                                        <div id="field-type-options" class="field-type-options">
+                                            <!-- Dynamic options based on field type -->
+                                        </div>
+                                        
+                                        <div class="field-editor-actions">
+                                            <button id="save-field-btn" class="btn btn-primary">Save Field</button>
+                                            <button id="delete-field-btn" class="btn btn-danger">Delete Field</button>
+                                            <button id="cancel-field-edit" class="btn">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
 
         <!-- Status Bar -->
@@ -186,6 +269,7 @@
     <script src="js/meta-analysis.js"></script>
     <script src="js/mass-edit.js"></script>
     <script src="js/map.js"></script>
+    <script src="js/schema-manager.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html> 

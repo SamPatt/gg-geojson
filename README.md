@@ -80,6 +80,35 @@ Use the files in `data/geometa/` for browser-based editing:
 - Start with `GG-countries-test-null.geojson` for empty data entry
 - Use `GG-countries-test.geojson` for testing with sample data
 
+**Development Setup:**
+```bash
+# Start development server from project root
+python3 -m http.server 8000
+
+# Then access the application at:
+# http://localhost:8000/web/
+```
+
+### Schema Management
+The web interface includes a Schema Manager tab for viewing and editing the GeoMeta schema:
+
+1. **View Schema**: See the current schema structure in JSON format
+2. **Edit Fields**: Click "Edit" on any field to modify its properties
+3. **Add Fields**: Click "Add Field" to create new GeoMeta fields
+4. **Delete Fields**: Remove fields from the schema (with confirmation)
+5. **Export Schemas**: Download updated schema files for use in the project
+
+Supported field types:
+- **String**: Simple text fields
+- **Number**: Numeric values
+- **Boolean**: True/false values
+- **Array**: Lists of values
+- **Enum**: Predefined value lists
+- **Range**: Min/max numeric ranges
+- **Object**: Complex nested structures
+
+Schema changes automatically update the data editor interface.
+
 ## Notes
 - All fields support null values for gradual data entry
 - Quintile scales use 1-5 range (1=lowest, 5=highest)
