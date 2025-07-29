@@ -174,8 +174,8 @@ function initFileHandling() {
         saveGeoJSONFile();
     });
     
-    // Load sample files on startup
-    loadSampleFile('GG-countries-simplified.geojson');
+    // Note: File loading is now handled by the file browser
+    // No automatic file loading on startup
 }
 
 // Initialize when DOM is loaded

@@ -48,6 +48,11 @@ function initMap() {
  * Load GeoJSON data onto the map
  */
 function loadGeoJSONData(geoJsonData) {
+    console.log('loadGeoJSONData called with:', {
+        type: geoJsonData.type,
+        featureCount: geoJsonData.features?.length || 0
+    });
+    
     if (!map) {
         console.error('Map not initialized');
         return;
@@ -55,10 +60,12 @@ function loadGeoJSONData(geoJsonData) {
     
     // Clear existing layer
     if (geoJsonLayer) {
+        console.log('Removing existing GeoJSON layer');
         map.removeLayer(geoJsonLayer);
     }
     
     // Create GeoJSON layer with custom styling
+    console.log('Creating new GeoJSON layer with', geoJsonData.features.length, 'features');
     geoJsonLayer = L.geoJSON(geoJsonData, {
         style: function(feature) {
             return {
@@ -328,6 +335,9 @@ window.GeoMetaApp = window.GeoMetaApp || {};
 window.GeoMetaApp.updateMapStyling = updateMapStyling;
 window.GeoMetaApp.zoomToCountry = zoomToCountry;
 window.GeoMetaApp.fitAllCountries = fitAllCountries;
+
+// Set the map initialization function that main.js expects
+window.initializeMap = loadGeoJSONData;
 
 // Initialize map when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {

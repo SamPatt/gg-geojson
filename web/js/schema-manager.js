@@ -781,6 +781,13 @@ class SchemaManager {
             console.error('Required elements not found for DOM fix');
         }
     }
+
+    // Add method to show file browser
+    showFileBrowser() {
+        if (window.GeoMetaApp && window.GeoMetaApp.fileBrowser) {
+            window.GeoMetaApp.fileBrowser.show();
+        }
+    }
 }
 
 // Initialize schema manager when DOM is loaded
