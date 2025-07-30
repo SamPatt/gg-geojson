@@ -56,7 +56,7 @@ class BrowserTestSuite {
         await this.runBrowserTest('1.1', 'Load Test File', async () => {
             try {
                 // Simulate loading a test file
-                const testFile = await this.loadTestFileFromServer('data/geometa/GG-countries-test.geojson');
+                const testFile = await this.loadTestFileFromServer('/data/geometa/GG-countries-test.geojson');
                 return testFile && testFile.type === 'FeatureCollection';
             } catch (error) {
                 console.error('File loading test failed:', error);

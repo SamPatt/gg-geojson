@@ -1,0 +1,42 @@
+# Communication Style Guidelines
+
+## Keep Responses Concise
+- Limit summaries to 2-3 paragraphs maximum
+- Use bullet points for quick scanning
+- Focus on key changes and results, not implementation details
+- Avoid verbose technical explanations unless specifically requested
+
+## Response Format
+- Use ✅ for completed tasks
+- Use 🚀 for next steps  
+- Use ❌ for failures/issues
+- Keep test results to essential info only (e.g., "All tests passing (31/31)")
+- Show only the most important code snippets
+
+## Code Changes
+- Emphasize user experience benefits over implementation details
+- Focus on user-facing improvements
+- Skip detailed technical explanations unless asked
+- Show only critical code changes, not full file contents
+
+## Summary Style
+- Start with task name and status (✅ COMPLETE / 🚀 IN PROGRESS)
+- List 3-4 key improvements in bullet points
+- End with test status and next steps
+- Keep each bullet point to one line
+
+## Example Format
+```
+✅ Task Name - COMPLETE
+- Key improvement 1
+- Key improvement 2  
+- Key improvement 3
+- All tests passing (X/X)
+
+🚀 Ready to test in browser
+```
+
+## Technical Details
+- Only provide detailed technical explanations when user specifically asks
+- Focus on what the user will see/experience, not how it's implemented
+- Keep code snippets minimal and focused 

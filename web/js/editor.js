@@ -27,6 +27,68 @@ function openEditor(feature) {
 }
 
 /**
+ * Focus on a specific field in the editor
+ */
+function focusOnField(fieldName) {
+    console.log('Focusing on field:', fieldName);
+    
+    // Clear any existing field highlights
+    clearFieldHighlights();
+    
+    // Find the field element
+    const fieldElement = findFieldElement(fieldName);
+    if (fieldElement) {
+        // Add editing highlight
+        fieldElement.classList.add('editing');
+        
+        // Scroll to the field
+        fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Focus on the first input in the field
+        const firstInput = fieldElement.querySelector('input, select, textarea');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    }
+}
+
+/**
+ * Clear all field highlights
+ */
+function clearFieldHighlights() {
+    const editingFields = document.querySelectorAll('.form-group.editing');
+    editingFields.forEach(field => {
+        field.classList.remove('editing');
+    });
+}
+
+/**
+ * Find the form element for a specific field
+ */
+function findFieldElement(fieldName) {
+    // Try different selectors for the field
+    const selectors = [
+        `[name*="${fieldName}"]`,
+        `[name*="${fieldName.replace('_', '-')}"]`,
+        `[data-field="${fieldName}"]`,
+        `.form-group[data-field="${fieldName}"]`
+    ];
+    
+    for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element) {
+            // If it's an input, get its parent form-group
+            if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') {
+                return element.closest('.form-group');
+            }
+            return element;
+        }
+    }
+    
+    return null;
+}
+
+/**
  * Close the editor
  */
 function closeEditor() {
@@ -499,6 +561,9 @@ function saveGeoMetaData() {
     updateMapStyling();
     updateCountryCount();
     
+    // Clear field highlights
+    clearFieldHighlights();
+    
     // Update popup content
     updatePopupContent(currentEditingFeature);
     
@@ -589,7 +654,9 @@ document.addEventListener('DOMContentLoaded', function() {
 window.Editor = {
     openEditor,
     closeEditor,
-    saveGeoMetaData
+    saveGeoMetaData,
+    focusOnField,
+    clearFieldHighlights
 };
 
 // Global function for popup edit button

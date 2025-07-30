@@ -76,6 +76,24 @@ function startMassEdit(field, fieldName) {
     updateSelectionCount();
 }
 
+/**
+ * Open editor for a specific country with field focus
+ */
+function openEditorWithFieldFocus(countryFeature, fieldName) {
+    if (window.Editor && window.Editor.openEditor) {
+        window.Editor.openEditor(countryFeature);
+        
+        // Focus on the specific field
+        setTimeout(() => {
+            if (window.Editor && window.Editor.focusOnField) {
+                window.Editor.focusOnField(fieldName);
+            }
+        }, 100);
+    } else {
+        console.error('Editor function not available');
+    }
+}
+
 
 
 /**
@@ -614,6 +632,7 @@ function initMassSelectionControls() {
 window.MassEdit = {
     cancelMassEditMode,
     startMassEdit,
+    openEditorWithFieldFocus,
     generateMassEditField,
     collectMassEditValue,
     resetMapInteraction,

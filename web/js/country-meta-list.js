@@ -19,6 +19,15 @@ function initCountryMetaList() {
             filterCountryMetaFields(this.value);
         });
     }
+    
+    // Test if the container exists
+    const container = document.getElementById('country-meta-list');
+    if (container) {
+        console.log('Country meta list container found');
+        container.innerHTML = '<div class="loading-country-meta-fields">Select a country to view meta data...</div>';
+    } else {
+        console.error('Country meta list container not found');
+    }
 }
 
 /**
@@ -26,16 +35,26 @@ function initCountryMetaList() {
  */
 function updateCountryMetaList(feature) {
     console.log('Updating country meta list for:', getCountryName(feature));
+    console.log('Feature properties:', feature.properties);
+    console.log('Geo meta data:', feature.properties.geo_meta);
     
     currentCountryFeature = feature;
     
-    if (!feature || !feature.properties.geo_meta) {
+    if (!feature) {
+        console.log('No feature provided');
+        showNoCountryMetaData();
+        return;
+    }
+    
+    if (!feature.properties.geo_meta) {
+        console.log('No geo_meta data found');
         showNoCountryMetaData();
         return;
     }
     
     // Discover meta fields and their values for this country
     const fields = discoverCountryMetaFields(feature);
+    console.log('Discovered fields:', fields);
     countryMetaFieldsList = fields;
     
     // Render the list
@@ -226,30 +245,19 @@ function handleCountryMetaFieldEdit(fieldName) {
     if (!fieldData) return;
     
     // Open the editor for this country and focus on this field
-    if (window.Editor && window.Editor.openEditor) {
+    if (window.MassEdit && window.MassEdit.openEditorWithFieldFocus) {
+        window.MassEdit.openEditorWithFieldFocus(currentCountryFeature, fieldName);
+    } else if (window.Editor && window.Editor.openEditor) {
         window.Editor.openEditor(currentCountryFeature);
         
-        // Focus on the specific field (this would need to be implemented in the editor)
+        // Focus on the specific field using the editor's focus function
         setTimeout(() => {
-            focusOnField(fieldName);
+            if (window.Editor && window.Editor.focusOnField) {
+                window.Editor.focusOnField(fieldName);
+            }
         }, 100);
     } else {
         console.error('Editor function not available');
-    }
-}
-
-/**
- * Focus on a specific field in the editor
- */
-function focusOnField(fieldName) {
-    // This is a placeholder - the actual implementation would depend on the editor structure
-    console.log('Focusing on field:', fieldName);
-    
-    // Try to find and focus on the field input
-    const fieldInput = document.querySelector(`[name*="${fieldName}"]`);
-    if (fieldInput) {
-        fieldInput.focus();
-        fieldInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 

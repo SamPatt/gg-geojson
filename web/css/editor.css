@@ -818,6 +818,36 @@ select[name*="has_official_coverage"] option[value="false"] {
     box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
 }
 
+/* Editing state styling */
+.form-group.editing {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+    position: relative;
+}
+
+.form-group.editing::before {
+    content: "✏️ Editing";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #ffc107;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.form-group.editing label {
+    font-weight: bold;
+    color: #856404;
+}
+
 /* Number field styling */
 .form-group input[type="number"] {
     text-align: center;
@@ -885,28 +915,119 @@ select[name*="has_official_coverage"] option[value="false"] {
 .mass-edit-form {
     margin-top: 1rem;
     border: 1px solid #ecf0f1;
-    border-radius: 4px;
+    border-radius: 8px;
     background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
-    background: #34495e;
+    padding: 1rem;
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
     color: white;
-    border-radius: 4px 4px 0 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #ecf0f1;
 }
 
 .form-header h5 {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
 }
 
 .form-content {
+    padding: 1.5rem;
+}
+
+/* Mass Edit Field Container */
+#mass-edit-field-container {
+    background: white;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#mass-edit-field-container .form-group {
+    margin-bottom: 1.5rem;
     padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+#mass-edit-field-container .form-group:last-child {
+    margin-bottom: 0;
+}
+
+#mass-edit-field-container label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Radio and Checkbox Groups in Mass Edit */
+#mass-edit-field-container .radio-group,
+#mass-edit-field-container .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+#mass-edit-field-container .radio-group label,
+#mass-edit-field-container .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: normal;
+}
+
+#mass-edit-field-container .radio-group label:hover,
+#mass-edit-field-container .checkbox-group label:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+#mass-edit-field-container .radio-group input:checked + span,
+#mass-edit-field-container .checkbox-group input:checked + span {
+    color: #2196f3;
+    font-weight: 600;
+}
+
+/* Scale Inputs in Mass Edit */
+#mass-edit-field-container .scale-inputs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+#mass-edit-field-container .scale-inputs input {
+    width: 80px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+#mass-edit-field-container .scale-inputs span {
+    font-weight: 600;
+    color: #6c757d;
 }
 
 .mass-edit-actions {
