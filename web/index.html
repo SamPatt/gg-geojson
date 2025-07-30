@@ -18,13 +18,13 @@
         <!-- Header -->
         <header class="app-header">
             <h1>GeoMeta Editor</h1>
-            <div class="file-controls">
-                <button id="load-file-btn" class="btn">Load File</button>
-                <button id="open-file-browser-btn" class="btn btn-secondary">📁 Browse Files</button>
-                <input type="file" id="file-input" accept=".geojson" style="display: none;">
-                <button id="save-file-btn" class="btn">Save File</button>
-                <span id="current-file">No file loaded</span>
-            </div>
+                            <div class="file-controls">
+                    <button id="open-file-browser-btn" class="btn btn-secondary">📁 Browse Files</button>
+                    <button id="save-file-btn" class="btn">Save File</button>
+                    <div class="file-status" id="file-status" title="No file loaded">
+                        <div class="status-indicator status-none"></div>
+                    </div>
+                </div>
             
             <!-- Tab Navigation -->
             <div class="tab-navigation">
@@ -273,5 +273,8 @@
     <script src="js/map.js"></script>
     <script src="js/schema-manager.js"></script>
     <script src="js/main.js"></script>
+    
+    <!-- Test Suite (Development Only) -->
+    <script src="../tests/browser-test-suite.js"></script>
 </body>
 </html> 

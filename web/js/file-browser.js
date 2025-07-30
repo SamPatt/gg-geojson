@@ -228,8 +228,15 @@ class FileBrowser {
         fileBrowser.innerHTML = `
             <div class="file-browser-modal">
                 <div class="file-browser-header">
-                    <h2>Select a File to Load</h2>
-                    <p>Choose a GeoJSON file with map data or a schema file to get started</p>
+                    <div class="header-content">
+                        <div>
+                            <h2>Select a File to Load</h2>
+                            <p>Choose a GeoJSON file with map data or a schema file to get started</p>
+                        </div>
+                        <button id="load-file-picker" class="btn btn-secondary">
+                            📁 Load File
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="file-browser-content">
@@ -238,9 +245,6 @@ class FileBrowser {
                     </div>
                     
                     <div class="file-browser-actions">
-                        <button id="load-file-picker" class="btn btn-secondary">
-                            📁 Load from File Picker
-                        </button>
                         <button id="file-browser-cancel" class="btn btn-outline">
                             Cancel
                         </button>

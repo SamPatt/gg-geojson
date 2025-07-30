@@ -42,9 +42,44 @@ body {
     gap: 1rem;
 }
 
-#current-file {
-    font-size: 0.9rem;
-    opacity: 0.8;
+.file-status {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+    cursor: help;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #ddd;
+    transition: all 0.2s ease;
+}
+
+.status-indicator.status-none {
+    background: #e9ecef;
+    box-shadow: 0 0 0 1px #dee2e6;
+}
+
+.status-indicator.status-geojson {
+    background: #28a745;
+    box-shadow: 0 0 0 1px #28a745;
+}
+
+.status-indicator.status-schema {
+    background: #007bff;
+    box-shadow: 0 0 0 1px #007bff;
+}
+
+.status-indicator.status-error {
+    background: #dc3545;
+    box-shadow: 0 0 0 1px #dc3545;
+}
+
+.file-status:hover .status-indicator {
+    transform: scale(1.1);
 }
 
 /* Tab Navigation */
@@ -509,6 +544,13 @@ body {
     padding: 24px 32px 16px;
     border-bottom: 1px solid #e0e0e0;
     background: #f8f9fa;
+}
+
+.file-browser-header .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
 }
 
 .file-browser-header h2 {

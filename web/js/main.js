@@ -16,7 +16,9 @@ window.GeoMetaApp = {
     map: null,
     geoJsonLayer: null,
     isInitialized: false,
-    fileBrowser: null
+    fileBrowser: null,
+    'save-file-btn': null,
+    'file-status': null
 };
 
 /**
@@ -28,9 +30,8 @@ function initApp() {
     // Check if all required elements exist
     const requiredElements = [
         'map',
-        'load-file-btn',
         'save-file-btn',
-        'current-file',
+        'file-status',
         'status-message',
         'country-count'
     ];
@@ -85,6 +86,9 @@ async function setupApp() {
         
         updateStatus('Ready');
         showSuccess('GeoMeta Editor initialized successfully');
+        
+        // Initialize file status
+        updateFileStatus('none', 'No file loaded');
         
         console.log('Application setup complete');
         
@@ -215,6 +219,9 @@ async function loadGeoJSONFile(file) {
         updateStatus(`Loaded ${file.name} (${file.analysis.featureCount} features)`);
         showSuccess(`Successfully loaded ${file.name}`);
         
+        // Update status indicator
+        updateFileStatus('geojson', `${file.name} (${file.analysis.featureCount} features)`);
+        
     } catch (error) {
         console.error('Error loading GeoJSON file:', error);
         throw new Error('Failed to load GeoJSON file: ' + error.message);
@@ -251,6 +258,9 @@ async function loadSchemaFile(file) {
         
         updateStatus(`Loaded schema: ${file.name}`);
         showSuccess(`Successfully loaded schema: ${file.name}`);
+        
+        // Update status indicator
+        updateFileStatus('schema', `Schema: ${file.name}`);
         
     } catch (error) {
         console.error('Error loading schema file:', error);
@@ -358,6 +368,23 @@ async function extractSchemaFromGeoJSON(geoJSONData) {
 }
 
 /**
+ * Update the file status indicator
+ */
+function updateFileStatus(type, tooltip) {
+    const fileStatus = document.getElementById('file-status');
+    const statusIndicator = fileStatus.querySelector('.status-indicator');
+    
+    // Remove all status classes
+    statusIndicator.classList.remove('status-none', 'status-geojson', 'status-schema', 'status-error');
+    
+    // Add the appropriate status class
+    statusIndicator.classList.add(`status-${type}`);
+    
+    // Update tooltip
+    fileStatus.title = tooltip;
+}
+
+/**
  * Show placeholder for map when no GeoJSON is loaded
  */
 function showMapPlaceholder() {
@@ -373,6 +400,9 @@ function showMapPlaceholder() {
             </div>
         `;
     }
+    
+    // Reset file status when no file is loaded
+    updateFileStatus('none', 'No file loaded');
 }
 
 /**
@@ -421,10 +451,12 @@ function setupGlobalEvents() {
             saveGeoJSONFile();
         }
         
-        // Ctrl/Cmd + O to open file
+        // Ctrl/Cmd + O to open file browser
         if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
             e.preventDefault();
-            document.getElementById('load-file-btn').click();
+            if (window.GeoMetaApp.fileBrowser) {
+                window.GeoMetaApp.fileBrowser.show();
+            }
         }
         
         // Escape to close editor

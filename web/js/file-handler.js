@@ -144,30 +144,8 @@ async function loadSampleFile(filename) {
  * Initialize file handling
  */
 function initFileHandling() {
-    // File input handling
-    const fileInput = document.getElementById('file-input');
-    const loadFileBtn = document.getElementById('load-file-btn');
+    // Save file button
     const saveFileBtn = document.getElementById('save-file-btn');
-    
-    // Load file button
-    loadFileBtn.addEventListener('click', function() {
-        fileInput.click();
-    });
-    
-    // File input change
-    fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            showLoading(true);
-            loadGeoJSONFile(file)
-                .then(() => {
-                    showLoading(false);
-                })
-                .catch(() => {
-                    showLoading(false);
-                });
-        }
-    });
     
     // Save file button
     saveFileBtn.addEventListener('click', function() {

@@ -1,0 +1,163 @@
+{
+  "testConfig": {
+    "name": "GG-GeoJSON Test Configuration",
+    "version": "1.0.0",
+    "description": "Configuration for GG-GeoJSON project tests",
+    
+    "fileDetection": {
+      "supportedFormats": [".geojson", ".json"],
+      "maxFileSize": "50MB",
+      "requiredFields": ["type", "features"],
+      "validTypes": ["FeatureCollection"]
+    },
+    
+    "validation": {
+      "geoJsonStructure": {
+        "required": ["type", "features"],
+        "type": "FeatureCollection",
+        "features": {
+          "type": "array",
+          "minItems": 1
+        }
+      },
+      "featureStructure": {
+        "required": ["type", "geometry", "properties"],
+        "type": "Feature",
+        "geometry": {
+          "required": ["type", "coordinates"]
+        },
+        "properties": {
+          "type": "object"
+        }
+      },
+      "geoMetaSchema": {
+        "required": [
+          "driving_side",
+          "hemisphere", 
+          "road_lines",
+          "road_quality",
+          "has_official_coverage",
+          "arid_lush",
+          "cold_hot",
+          "flat_mountainous",
+          "soil_color"
+        ]
+      }
+    },
+    
+    "editing": {
+      "supportedOperations": ["add", "edit", "delete"],
+      "fieldTypes": ["string", "number", "boolean", "array", "object", "enum", "range"],
+      "batchOperations": {
+        "maxFeatures": 1000,
+        "timeout": 5000
+      }
+    },
+    
+    "saving": {
+      "formats": ["JSON", "GeoJSON"],
+      "compression": false,
+      "prettyPrint": true,
+      "encoding": "UTF-8"
+    },
+    
+    "performance": {
+      "maxProcessingTime": 1000,
+      "maxFileSize": 52428800,
+      "maxFeatures": 10000
+    },
+    
+    "browser": {
+      "requiredElements": [
+        "map",
+        "editor-panel",
+        "save-file-btn",
+        "open-file-browser-btn"
+      ],
+      "requiredFunctions": [
+        "loadGeoJSONFile",
+        "saveGeoJSONFile",
+        "validateGeoJSON",
+        "validateGeoMetaSchema"
+      ],
+      "testData": [
+        "data/geometa/GG-countries-test.geojson",
+        "data/geometa/GG-countries-test-null.geojson"
+      ]
+    },
+    
+    "testSuites": {
+      "node": {
+        "file": "tests/test-suite.js",
+        "timeout": 30000,
+        "categories": [
+          "fileDetection",
+          "geoJsonValidation", 
+          "fieldEditing",
+          "dataSaving",
+          "schemaValidation",
+          "integrationScenarios"
+        ]
+      },
+      "browser": {
+        "file": "tests/browser-test-suite.js",
+        "timeout": 10000,
+        "categories": [
+          "fileLoading",
+          "mapFunctionality",
+          "editorFunctionality", 
+          "schemaManager",
+          "dataValidation",
+          "saveAndExport"
+        ]
+      },
+      "integration": {
+        "file": "tests/run-tests.js",
+        "timeout": 60000,
+        "categories": [
+          "fileStructure",
+          "jsonValidation",
+          "htmlStructure",
+          "javascriptValidation"
+        ]
+      }
+    },
+    
+    "expectedResults": {
+      "nodeTests": {
+        "minPassRate": 90,
+        "totalTests": 24,
+        "categories": {
+          "fileDetection": 4,
+          "geoJsonValidation": 4,
+          "fieldEditing": 4,
+          "dataSaving": 4,
+          "schemaValidation": 4,
+          "integrationScenarios": 4
+        }
+      },
+      "browserTests": {
+        "minPassRate": 80,
+        "totalTests": 18,
+        "categories": {
+          "fileLoading": 3,
+          "mapFunctionality": 3,
+          "editorFunctionality": 4,
+          "schemaManager": 3,
+          "dataValidation": 3,
+          "saveAndExport": 3
+        }
+      },
+      "integrationTests": {
+        "minPassRate": 100,
+        "totalTests": 4,
+        "categories": {
+          "fileStructure": 1,
+          "jsonValidation": 1,
+          "htmlStructure": 1,
+          "javascriptValidation": 1
+        }
+      }
+    }
+  }
+} 
