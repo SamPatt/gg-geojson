@@ -12,70 +12,16 @@ let analysisVisible = false;
  * Initialize meta analysis functionality
  */
 function initMetaAnalysis() {
-    const selectMetaBtn = document.getElementById('select-meta-btn');
-    const selectMetaDropdown = document.getElementById('select-meta-dropdown');
-    const metaSelectionSearch = document.getElementById('meta-selection-search');
-    const changeMetaBtn = document.getElementById('change-meta-btn');
     const closeAnalysis = document.getElementById('close-analysis');
     
-    // Select meta button click
-    selectMetaBtn.addEventListener('click', function() {
-        selectMetaDropdown.style.display = selectMetaDropdown.style.display === 'none' ? 'block' : 'none';
-        if (selectMetaDropdown.style.display === 'block') {
-            metaSelectionSearch.focus();
-        }
-    });
-    
-    // Change meta button click
-    changeMetaBtn.addEventListener('click', function() {
-        clearSelectedMeta();
-        selectMetaDropdown.style.display = 'block';
-        metaSelectionSearch.focus();
-    });
-    
-    // Search functionality
-    metaSelectionSearch.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const options = document.querySelectorAll('.meta-selection-option');
-        
-        options.forEach(option => {
-            const text = option.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                option.style.display = 'block';
-            } else {
-                option.style.display = 'none';
-            }
-        });
-    });
-    
-    // Meta selection option selection
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('meta-selection-option')) {
-            const field = e.target.dataset.field;
-            const fieldName = e.target.textContent;
-            
-            // Close dropdown
-            selectMetaDropdown.style.display = 'none';
-            metaSelectionSearch.value = '';
-            
-            // Set selected meta
-            setSelectedMeta(field, fieldName);
-        }
-    });
-    
-    // Analyze meta button is hidden - analysis is automatic when meta is selected
-    
     // Close analysis
-    closeAnalysis.addEventListener('click', function() {
-        cancelMetaAnalysis();
-    });
+    if (closeAnalysis) {
+        closeAnalysis.addEventListener('click', function() {
+            cancelMetaAnalysis();
+        });
+    }
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!selectMetaBtn.contains(e.target) && !selectMetaDropdown.contains(e.target)) {
-            selectMetaDropdown.style.display = 'none';
-        }
-    });
+    console.log('Meta analysis initialized (new layout)');
 }
 
 /**
@@ -83,16 +29,6 @@ function initMetaAnalysis() {
  */
 function setSelectedMeta(field, fieldName) {
     currentSelectedMeta = { field, name: fieldName };
-    
-    // Show selected meta display
-    document.getElementById('selected-meta-display').style.display = 'flex';
-    document.getElementById('current-selected-meta').textContent = fieldName;
-    
-    // Show action buttons
-    document.getElementById('meta-actions').style.display = 'flex';
-    
-    // Hide select meta button
-    document.getElementById('select-meta-btn').style.display = 'none';
     
     // Automatically start meta analysis
     startMetaAnalysis(field, fieldName);
@@ -105,19 +41,11 @@ function clearSelectedMeta() {
     currentSelectedMeta = null;
     analysisVisible = false;
     
-    // Hide selected meta display
-    document.getElementById('selected-meta-display').style.display = 'none';
-    
-    // Hide action buttons
-    document.getElementById('meta-actions').style.display = 'none';
-    
-    // Analyze button is hidden - no need to update text
-    
-    // Show select meta button
-    document.getElementById('select-meta-btn').style.display = 'flex';
-    
     // Hide analysis results
-    document.getElementById('meta-analysis-results').style.display = 'none';
+    const analysisResults = document.getElementById('meta-analysis-results');
+    if (analysisResults) {
+        analysisResults.style.display = 'none';
+    }
     
     // Clear legend
     if (window.Legend) {

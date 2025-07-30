@@ -121,10 +121,11 @@ class BrowserTestSuite {
             return editorPanel && editorPanel.style.display !== 'none';
         });
 
-        // Test 3.2: Meta selection functionality
-        await this.runBrowserTest('3.2', 'Meta Selection Available', () => {
-            const selectMetaBtn = document.getElementById('select-meta-btn');
-            return selectMetaBtn && selectMetaBtn.textContent.includes('Select Meta');
+        // Test 3.2: Meta fields list functionality
+        await this.runBrowserTest('3.2', 'Meta Fields List Available', () => {
+            const metaFieldsList = document.getElementById('meta-fields-list');
+            const metaFieldsSearch = document.getElementById('meta-fields-search');
+            return metaFieldsList && metaFieldsSearch;
         });
 
         // Test 3.3: Mass edit functionality

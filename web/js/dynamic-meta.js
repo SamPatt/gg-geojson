@@ -233,25 +233,14 @@ function formatFieldName(fieldName) {
  * Update the meta selection dropdown with discovered fields
  */
 function updateMetaSelectionDropdown() {
-    console.log('updateMetaSelectionDropdown called');
-    const dropdownContent = document.querySelector('#select-meta-dropdown .dropdown-content');
-    console.log('dropdownContent found:', !!dropdownContent);
+    console.log('updateMetaSelectionDropdown called (new layout)');
     
-    if (availableMetaFields.length === 0) {
-        console.log('No meta fields available');
-        dropdownContent.innerHTML = '<div class="no-fields">No meta fields found in data</div>';
-        return;
+    // Update the meta fields list instead of the dropdown
+    if (window.MetaFieldsList && window.MetaFieldsList.updateMetaFieldsList) {
+        window.MetaFieldsList.updateMetaFieldsList();
     }
     
-    console.log('Updating dropdown with fields:', availableMetaFields);
-    let html = '';
-    availableMetaFields.forEach(field => {
-        const schema = metaFieldSchemas[field];
-        html += `<div class="meta-selection-option" data-field="${field}">${schema.displayName}</div>`;
-    });
-    
-    dropdownContent.innerHTML = html;
-    console.log('Dropdown updated');
+    console.log('Meta fields list updated');
 }
 
 /**

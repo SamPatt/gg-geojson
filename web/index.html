@@ -71,32 +71,17 @@
                         <!-- Metas Section -->
                         <div class="metas-section">
                             
-                            <!-- Meta Selection -->
-                            <div class="meta-selection">
-                                <div class="meta-selection-controls">
-                                    <button id="select-meta-btn" class="btn btn-secondary">
-                                        <span class="btn-icon">🔍</span>
-                                        Select Meta
-                                    </button>
-                                    
-                                    <!-- Meta Selection Dropdown -->
-                                    <div id="select-meta-dropdown" class="meta-selection-dropdown" style="display: none;">
-                                        <div class="dropdown-header">
-                                            <input type="text" id="meta-selection-search" placeholder="Search meta fields..." class="search-input">
-                                        </div>
-                                        <div class="dropdown-content">
-                                            <div class="no-fields">Loading meta fields...</div>
-                                        </div>
+                            <!-- Meta Fields List -->
+                            <div class="meta-fields-section">
+                                <div class="meta-fields-header">
+                                    <h4>Meta Fields</h4>
+                                    <div class="search-container">
+                                        <input type="text" id="meta-fields-search" placeholder="Search meta fields..." class="search-input">
                                     </div>
                                 </div>
                                 
-                                <!-- Selected Meta Display -->
-                                <div id="selected-meta-display" class="selected-meta-display" style="display: none;">
-                                    <div class="selected-meta-info">
-                                        <span class="selected-meta-label">Selected:</span>
-                                        <span id="current-selected-meta" class="selected-meta-name"></span>
-                                    </div>
-                                    <button id="change-meta-btn" class="btn-small">Change</button>
+                                <div class="meta-fields-list" id="meta-fields-list">
+                                    <div class="loading-meta-fields">Loading meta fields...</div>
                                 </div>
                             </div>
                             
@@ -131,6 +116,17 @@
                                         <button id="apply-mass-edit" class="btn btn-primary">Apply to Selected Countries</button>
                                         <button id="cancel-mass-edit" class="btn">Cancel</button>
                                     </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Country Meta Fields List (shown when country is selected) -->
+                            <div class="country-meta-fields-section" id="country-meta-fields-section" style="display: none;">
+                                <div class="country-meta-fields-header">
+                                    <h4 id="country-meta-fields-title">Country Meta Data</h4>
+                                </div>
+                                
+                                <div class="country-meta-fields-list" id="country-meta-list">
+                                    <div class="loading-country-meta-fields">Select a country to view meta data...</div>
                                 </div>
                             </div>
                             
@@ -270,6 +266,8 @@
     <script src="js/editor.js"></script>
     <script src="js/meta-analysis.js"></script>
     <script src="js/mass-edit.js"></script>
+    <script src="js/meta-fields-list.js"></script>
+    <script src="js/country-meta-list.js"></script>
     <script src="js/map.js"></script>
     <script src="js/schema-manager.js"></script>
     <script src="js/main.js"></script>

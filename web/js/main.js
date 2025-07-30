@@ -210,6 +210,12 @@ async function loadGeoJSONFile(file) {
         console.log('Extracting schema...');
         await extractSchemaFromGeoJSON(geoJSONData);
         
+        // Update meta fields list
+        if (window.MetaFieldsList && window.MetaFieldsList.updateMetaFieldsList) {
+            console.log('Updating meta fields list...');
+            window.MetaFieldsList.updateMetaFieldsList();
+        }
+        
         // Switch to data editor tab
         if (window.schemaManager && window.schemaManager.switchTab) {
             console.log('Switching to editor tab...');

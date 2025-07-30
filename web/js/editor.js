@@ -585,6 +585,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initEditor();
 });
 
+// Export functions for use in other modules
+window.Editor = {
+    openEditor,
+    closeEditor,
+    saveGeoMetaData
+};
+
 // Global function for popup edit button
 window.editCountry = function(countryName) {
     if (!window.GeoMetaApp.currentData) return;

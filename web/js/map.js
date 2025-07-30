@@ -187,6 +187,17 @@ function clearSelection() {
         selectedCountry = null;
         window.GeoMetaApp.selectedCountry = null;
         window.GeoMetaApp.selectedFeature = null;
+        
+        // Hide country meta fields section
+        const countryMetaSection = document.getElementById('country-meta-fields-section');
+        if (countryMetaSection) {
+            countryMetaSection.style.display = 'none';
+        }
+        
+        // Clear country meta data
+        if (window.CountryMetaList && window.CountryMetaList.clearCountryMetaData) {
+            window.CountryMetaList.clearCountryMetaData();
+        }
     }
 }
 
@@ -219,6 +230,23 @@ function selectCountry(feature, layer) {
     selectedCountry = layer;
     window.GeoMetaApp.selectedCountry = layer;
     window.GeoMetaApp.selectedFeature = feature;
+    
+    // Update country meta list
+    if (window.CountryMetaList && window.CountryMetaList.updateCountryMetaList) {
+        window.CountryMetaList.updateCountryMetaList(feature);
+    }
+    
+    // Show country meta fields section
+    const countryMetaSection = document.getElementById('country-meta-fields-section');
+    if (countryMetaSection) {
+        countryMetaSection.style.display = 'block';
+        
+        // Update the title
+        const title = document.getElementById('country-meta-fields-title');
+        if (title) {
+            title.textContent = `Meta Data: ${getCountryName(feature)}`;
+        }
+    }
     
     // Open editor for this country
     openEditor(feature);
