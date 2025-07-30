@@ -349,9 +349,12 @@ function applyMassEditToSelected() {
     });
     
     // Update map styling to reflect new data
-    if (window.GeoMetaApp && window.GeoMetaApp.updateMapStyling) {
+    if (window.GeoMetaApp && window.GeoMetaApp.updateMapStylingForCountries) {
+        window.GeoMetaApp.updateMapStylingForCountries(selectedCountries);
+    } else if (window.GeoMetaApp && window.GeoMetaApp.updateMapStyling) {
         window.GeoMetaApp.updateMapStyling();
     }
+    
     updateCountryCount();
     
     // Deselect all countries after applying changes

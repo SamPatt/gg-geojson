@@ -197,7 +197,7 @@ async function loadGeoJSONFile(file) {
         });
         
         // Store the current file and data
-        window.GeoMetaApp.currentFile = file;
+        window.GeoMetaApp.currentFile = file.name || file.path || 'geometa-data.geojson';
         window.GeoMetaApp.currentData = geoJSONData;
         
         // Initialize map with the data
@@ -240,7 +240,7 @@ async function loadSchemaFile(file) {
         const schemaData = await response.json();
         
         // Store the current file
-        window.GeoMetaApp.currentFile = file;
+        window.GeoMetaApp.currentFile = file.name || file.path || 'schema.json';
         
         // Set the schema in the schema manager
         if (window.schemaManager) {

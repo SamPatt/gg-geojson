@@ -15,6 +15,13 @@ class FileBrowser {
         console.log('FileBrowser initialization complete');
     }
 
+    async refresh() {
+        console.log('FileBrowser.refresh() called');
+        await this.scanForFiles();
+        this.populateFilesList();
+        console.log('FileBrowser refresh complete');
+    }
+
     async scanForFiles() {
         this.availableFiles = [];
         
@@ -56,23 +63,44 @@ class FileBrowser {
             const response = await fetch(path);
             if (!response.ok) return [];
             
-            // For now, we'll use a predefined list since we can't easily scan directories
-            // In a real implementation, you might have a server endpoint that lists files
+            // Dynamic file scanning with fallback to known files
             const knownFiles = {
                 '../data/geometa/': [
                     'GG-countries-simplified.geojson',
                     'GG-countries-test.geojson',
                     'GG-countries-test-null.geojson',
-                    'GG-test-custom-schema.geojson'
+                    'GG-countries-simplified-test.geojson'
                 ],
                 '../schemas/': [
                     'geometa-schema.json',
-                    'geojson-with-geometa-schema.json',
-                    'geojson-with-geometa-schema_test.json'
+                    'geojson-with-geometa-schema.json'
                 ]
             };
 
-            const files = knownFiles[path] || [];
+            // Try to get a directory listing first (if server supports it)
+            let files = [];
+            try {
+                const dirResponse = await fetch(`${path}?list=1`);
+                if (dirResponse.ok) {
+                    const dirContent = await dirResponse.text();
+                    // Parse directory listing (basic HTML parsing)
+                    const fileMatches = dirContent.match(/href="([^"]*\.(geojson|json))"/g);
+                    if (fileMatches) {
+                        files = fileMatches.map(match => {
+                            const filename = match.match(/href="([^"]*)"/)[1];
+                            return filename;
+                        }).filter(filename => filename && !filename.startsWith('../'));
+                    }
+                }
+            } catch (error) {
+                console.log('Directory listing not available, using known files');
+            }
+
+            // Fallback to known files if directory listing failed
+            if (files.length === 0) {
+                files = knownFiles[path] || [];
+            }
+
             const filePromises = files.map(async (filename) => {
                 try {
                     const fileResponse = await fetch(`${path}${filename}`);
@@ -233,9 +261,14 @@ class FileBrowser {
                             <h2>Select a File to Load</h2>
                             <p>Choose a GeoJSON file with map data or a schema file to get started</p>
                         </div>
-                        <button id="load-file-picker" class="btn btn-secondary">
-                            📁 Load File
-                        </button>
+                        <div class="header-buttons">
+                            <button id="refresh-files-btn" class="btn btn-outline" title="Refresh file list">
+                                🔄 Refresh
+                            </button>
+                            <button id="load-file-picker" class="btn btn-secondary">
+                                📁 Load File
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -374,6 +407,26 @@ class FileBrowser {
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
                 this.hide();
+            });
+        }
+
+        // Refresh button
+        const refreshBtn = document.getElementById('refresh-files-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                console.log('Refresh button clicked');
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = '🔄 Refreshing...';
+                
+                try {
+                    await this.refresh();
+                    console.log('Refresh completed successfully');
+                } catch (error) {
+                    console.error('Refresh failed:', error);
+                } finally {
+                    refreshBtn.disabled = false;
+                    refreshBtn.textContent = '🔄 Refresh';
+                }
             });
         }
     }

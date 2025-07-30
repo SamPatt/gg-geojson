@@ -266,6 +266,51 @@ function updateMapStyling() {
 }
 
 /**
+ * Update map styling for specific countries (used after mass edits)
+ */
+function updateMapStylingForCountries(countryNames) {
+    if (!geoJsonLayer || !window.GeoMetaApp.currentData) return;
+    
+    geoJsonLayer.eachLayer(function(layer) {
+        const feature = layer.feature;
+        const countryName = getCountryName(feature);
+        
+        if (countryNames.has(countryName)) {
+            // Don't override selection
+            if (layer === selectedCountry) return;
+            
+            const geoMeta = feature.properties.geo_meta;
+            
+            if (geoMeta && !isEmptyGeoMeta(geoMeta)) {
+                // Countries with data get a different color
+                const style = {
+                    fillColor: '#27ae60',
+                    weight: 0.5,
+                    color: '#229954',
+                    fillOpacity: 0.8
+                };
+                
+                // Store as original color
+                originalColors.set(layer, style);
+                layer.setStyle(style);
+            } else {
+                // Countries without data
+                const style = {
+                    fillColor: '#95a5a6',
+                    weight: 0.5,
+                    color: '#7f8c8d',
+                    fillOpacity: 0.3
+                };
+                
+                // Store as original color
+                originalColors.set(layer, style);
+                layer.setStyle(style);
+            }
+        }
+    });
+}
+
+/**
  * Zoom to a specific country
  */
 function zoomToCountry(countryName) {
@@ -332,7 +377,8 @@ function addEquatorLine() {
 
 // Export functions globally
 window.GeoMetaApp = window.GeoMetaApp || {};
-window.GeoMetaApp.updateMapStyling = updateMapStyling;
+    window.GeoMetaApp.updateMapStyling = updateMapStyling;
+    window.GeoMetaApp.updateMapStylingForCountries = updateMapStylingForCountries;
 window.GeoMetaApp.zoomToCountry = zoomToCountry;
 window.GeoMetaApp.fitAllCountries = fitAllCountries;
 

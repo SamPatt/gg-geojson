@@ -553,6 +553,12 @@ body {
     gap: 20px;
 }
 
+.file-browser-header .header-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .file-browser-header h2 {
     margin: 0 0 8px 0;
     color: #333;
