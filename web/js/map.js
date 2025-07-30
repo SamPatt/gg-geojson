@@ -248,8 +248,8 @@ function selectCountry(feature, layer) {
         }
     }
     
-    // Open editor for this country
-    openEditor(feature);
+    // Show country meta list instead of opening editor directly
+    // The editor can be opened by clicking edit buttons in the meta list
 }
 
 /**

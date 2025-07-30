@@ -671,6 +671,36 @@ body {
     margin: 8px 0;
 }
 
+.no-files-message ul {
+    margin: 8px 0;
+    padding-left: 1.5rem;
+    text-align: left;
+}
+
+.no-files-message li {
+    margin: 4px 0;
+}
+
+.no-files-message code {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85em;
+    color: #495057;
+    border: 1px solid #e9ecef;
+}
+
+.file-browser-header p code {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85em;
+    color: #495057;
+    border: 1px solid #e9ecef;
+}
+
 .file-browser-actions {
     display: flex;
     gap: 12px;

@@ -158,6 +158,11 @@ function cancelMetaAnalysis() {
     // Reset map visualization
     resetMapForMetaAnalysis();
     
+    // Clear meta field selection in the list
+    if (window.MetaFieldsList && window.MetaFieldsList.clearCurrentMetaField) {
+        window.MetaFieldsList.clearCurrentMetaField();
+    }
+    
     // Deselect meta entirely and return to default view
     clearSelectedMeta();
 }

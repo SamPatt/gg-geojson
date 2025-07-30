@@ -11,6 +11,14 @@ let countryMetaFieldsList = [];
  */
 function initCountryMetaList() {
     console.log('Initializing country meta list...');
+    
+    // Add search functionality
+    const searchInput = document.getElementById('country-meta-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            filterCountryMetaFields(this.value);
+        });
+    }
 }
 
 /**
@@ -85,19 +93,41 @@ function createCountryMetaFieldItem(field) {
     const valueClass = field.hasValue ? 'has-value' : 'no-value';
     const valueIcon = field.hasValue ? '✅' : '❌';
     
+    console.log('Creating country meta field item:', field.name, 'with vertical layout');
+    
     return `
         <div class="country-meta-field-item" data-field="${field.name}">
-            <div class="country-meta-field-info">
-                <div class="country-meta-field-name">${field.displayName}</div>
-                <div class="country-meta-field-value ${valueClass}">
-                    <span class="country-meta-field-icon">${valueIcon}</span>
-                    ${field.displayValue}
+            <div class="country-meta-field-main">
+                <div class="country-meta-field-info">
+                    <div class="country-meta-field-name">${field.displayName}</div>
+                    <div class="country-meta-field-summary ${valueClass}">
+                        <span class="country-meta-field-icon">${valueIcon}</span>
+                        <span class="country-meta-field-preview">${field.displayValue}</span>
+                    </div>
+                </div>
+                <div class="country-meta-field-actions">
+                    <button class="country-meta-field-edit-btn" data-field="${field.name}" title="Edit ${field.displayName}">
+                        ✏️
+                    </button>
+                    <button class="country-meta-field-expand-btn" data-field="${field.name}" title="Expand ${field.displayName}">
+                        ▼
+                    </button>
                 </div>
             </div>
-            <div class="country-meta-field-actions">
-                <button class="country-meta-field-edit-btn" data-field="${field.name}" title="Edit ${field.displayName}">
-                    ✏️
-                </button>
+            <div class="country-meta-field-details" data-field="${field.name}" style="display: none;">
+                <div class="country-meta-field-expanded-content">
+                    <div class="country-meta-field-full-value">
+                        <strong>Value:</strong> ${field.displayValue}
+                    </div>
+                    <div class="country-meta-field-raw-value">
+                        <strong>Raw:</strong> <code>${JSON.stringify(field.value)}</code>
+                    </div>
+                    <div class="country-meta-field-actions-expanded">
+                        <button class="country-meta-field-edit-btn-expanded" data-field="${field.name}" title="Edit ${field.displayName}">
+                            ✏️ Edit Value
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -107,6 +137,7 @@ function createCountryMetaFieldItem(field) {
  * Add event listeners to country meta field items
  */
 function addCountryMetaFieldEventListeners() {
+    // Edit buttons (collapsed view)
     const editButtons = document.querySelectorAll('.country-meta-field-edit-btn');
     editButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -115,6 +146,68 @@ function addCountryMetaFieldEventListeners() {
             handleCountryMetaFieldEdit(fieldName);
         });
     });
+    
+    // Expand buttons
+    const expandButtons = document.querySelectorAll('.country-meta-field-expand-btn');
+    expandButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const fieldName = this.dataset.field;
+            handleCountryMetaFieldExpand(fieldName, this);
+        });
+    });
+    
+    // Edit buttons (expanded view)
+    const editButtonsExpanded = document.querySelectorAll('.country-meta-field-edit-btn-expanded');
+    editButtonsExpanded.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const fieldName = this.dataset.field;
+            handleCountryMetaFieldEdit(fieldName);
+        });
+    });
+    
+    // Click on field item to expand/collapse
+    const fieldItems = document.querySelectorAll('.country-meta-field-item');
+    fieldItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking on buttons
+            if (e.target.classList.contains('country-meta-field-edit-btn') || 
+                e.target.classList.contains('country-meta-field-expand-btn') ||
+                e.target.classList.contains('country-meta-field-edit-btn-expanded')) {
+                return;
+            }
+            
+            const fieldName = this.dataset.field;
+            const expandBtn = this.querySelector('.country-meta-field-expand-btn');
+            if (expandBtn) {
+                handleCountryMetaFieldExpand(fieldName, expandBtn);
+            }
+        });
+    });
+}
+
+/**
+ * Handle country meta field expand/collapse
+ */
+function handleCountryMetaFieldExpand(fieldName, expandBtn) {
+    console.log('Expand/collapse country meta field:', fieldName);
+    
+    const fieldItem = expandBtn.closest('.country-meta-field-item');
+    const detailsSection = fieldItem.querySelector('.country-meta-field-details');
+    const isExpanded = detailsSection.style.display !== 'none';
+    
+    if (isExpanded) {
+        // Collapse
+        detailsSection.style.display = 'none';
+        expandBtn.textContent = '▼';
+        expandBtn.title = `Expand ${fieldName}`;
+    } else {
+        // Expand
+        detailsSection.style.display = 'block';
+        expandBtn.textContent = '▲';
+        expandBtn.title = `Collapse ${fieldName}`;
+    }
 }
 
 /**
@@ -238,6 +331,25 @@ function showNoCountryMetaData() {
  */
 function getCurrentCountryFeature() {
     return currentCountryFeature;
+}
+
+/**
+ * Filter country meta fields based on search term
+ */
+function filterCountryMetaFields(searchTerm) {
+    const items = document.querySelectorAll('.country-meta-field-item');
+    const term = searchTerm.toLowerCase();
+    
+    items.forEach(item => {
+        const fieldName = item.dataset.field;
+        const displayName = item.querySelector('.country-meta-field-name').textContent;
+        
+        if (fieldName.toLowerCase().includes(term) || displayName.toLowerCase().includes(term)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
 }
 
 /**

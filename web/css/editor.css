@@ -342,6 +342,8 @@ select[name*="has_official_coverage"] option[value="false"] {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .meta-fields-header h4 {
@@ -349,11 +351,31 @@ select[name*="has_official_coverage"] option[value="false"] {
     color: #2c3e50;
     font-size: 1rem;
     font-weight: 600;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .search-container {
     flex: 1;
     margin-left: 1rem;
+    min-width: 200px;
+}
+
+/* Responsive breakpoint for long names */
+@media (max-width: 600px) {
+    .meta-fields-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .meta-fields-header h4 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .search-container {
+        margin-left: 0;
+        min-width: 100%;
+    }
 }
 
 .meta-fields-list {
@@ -376,6 +398,11 @@ select[name*="has_official_coverage"] option[value="false"] {
 
 .meta-field-item:hover {
     background-color: #f8f9fa;
+}
+
+.meta-field-item.selected {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
 }
 
 .meta-field-item:last-child {
@@ -455,7 +482,12 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .country-meta-fields-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .country-meta-fields-header h4 {
@@ -463,6 +495,31 @@ select[name*="has_official_coverage"] option[value="false"] {
     color: #2c3e50;
     font-size: 1rem;
     font-weight: 600;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.country-search-container {
+    flex: 1;
+    margin-left: 1rem;
+    min-width: 200px;
+}
+
+/* Responsive breakpoint for long names */
+@media (max-width: 600px) {
+    .country-meta-fields-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .country-meta-fields-header h4 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .country-search-container {
+        margin-left: 0;
+        min-width: 100%;
+    }
 }
 
 .country-meta-fields-list {
@@ -475,12 +532,18 @@ select[name*="has_official_coverage"] option[value="false"] {
 
 .country-meta-field-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #f1f3f4;
     transition: background-color 0.2s;
     cursor: pointer;
+}
+
+.country-meta-field-item .country-meta-field-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .country-meta-field-item:hover {
@@ -504,7 +567,7 @@ select[name*="has_official_coverage"] option[value="false"] {
     font-size: 0.9rem;
 }
 
-.country-meta-field-value {
+.country-meta-field-summary {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -512,12 +575,93 @@ select[name*="has_official_coverage"] option[value="false"] {
     color: #6c757d;
 }
 
-.country-meta-field-value.has-value {
+.country-meta-field-summary.has-value {
     color: #28a745;
 }
 
-.country-meta-field-value.no-value {
+.country-meta-field-summary.no-value {
     color: #dc3545;
+}
+
+.country-meta-field-preview {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.country-meta-field-details {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+.country-meta-field-expanded-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+}
+
+.country-meta-field-full-value {
+    font-size: 0.9rem !important;
+    color: #495057 !important;
+    padding: 0.5rem !important;
+    background: #f8f9fa !important;
+    border-radius: 4px !important;
+    border-left: 3px solid #28a745 !important;
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.country-meta-field-raw-value {
+    font-size: 0.8rem !important;
+    color: #6c757d !important;
+    padding: 0.5rem !important;
+    background: #f8f9fa !important;
+    border-radius: 4px !important;
+    border-left: 3px solid #6c757d !important;
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.country-meta-field-raw-value code {
+    background: #e9ecef !important;
+    padding: 0.2rem 0.4rem !important;
+    border-radius: 3px !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 0.85em !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+    display: block !important;
+    margin-top: 0.25rem !important;
+    word-break: break-all !important;
+    white-space: pre-wrap !important;
+    width: 100% !important;
+}
+
+.country-meta-field-actions-expanded {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.country-meta-field-edit-btn-expanded {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.country-meta-field-edit-btn-expanded:hover {
+    background: #0056b3;
 }
 
 .country-meta-field-icon {

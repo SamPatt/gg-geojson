@@ -104,9 +104,11 @@ function renderMetaFieldsList(fields) {
  */
 function createMetaFieldItem(field) {
     const countriesWithDataPercent = Math.round((field.countriesWithData / window.GeoMetaApp.currentData.features.length) * 100);
+    const isSelected = currentMetaField === field.name;
+    const selectedClass = isSelected ? 'selected' : '';
     
     return `
-        <div class="meta-field-item" data-field="${field.name}">
+        <div class="meta-field-item ${selectedClass}" data-field="${field.name}">
             <div class="meta-field-info">
                 <div class="meta-field-name">${field.displayName}</div>
                 <div class="meta-field-stats">
@@ -161,8 +163,8 @@ function handleMetaFieldEdit(fieldName) {
     const fieldData = metaFieldsList.find(f => f.name === fieldName);
     if (!fieldData) return;
     
-    // Set as current meta field
-    currentMetaField = fieldName;
+    // Set as current meta field and update UI
+    setCurrentMetaField(fieldName);
     
     // Start mass edit mode for this field
     if (window.MassEdit && window.MassEdit.startMassEdit) {
@@ -182,8 +184,8 @@ function handleMetaFieldSelect(fieldName) {
     const fieldData = metaFieldsList.find(f => f.name === fieldName);
     if (!fieldData) return;
     
-    // Set as current meta field
-    currentMetaField = fieldName;
+    // Set as current meta field and update UI
+    setCurrentMetaField(fieldName);
     
     // Start meta analysis for this field
     if (window.MetaAnalysis && window.MetaAnalysis.startMetaAnalysis) {
@@ -239,10 +241,19 @@ function getCurrentMetaField() {
 }
 
 /**
- * Clear current meta field
+ * Set current meta field and update UI
+ */
+function setCurrentMetaField(fieldName) {
+    currentMetaField = fieldName;
+    updateMetaFieldsList(); // Re-render to show selected state
+}
+
+/**
+ * Clear current meta field and update UI
  */
 function clearCurrentMetaField() {
     currentMetaField = null;
+    updateMetaFieldsList(); // Re-render to clear selected state
 }
 
 // Export functions for use in other modules
@@ -250,6 +261,7 @@ window.MetaFieldsList = {
     initMetaFieldsList,
     updateMetaFieldsList,
     getCurrentMetaField,
+    setCurrentMetaField,
     clearCurrentMetaField
 };
 

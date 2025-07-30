@@ -259,7 +259,7 @@ class FileBrowser {
                     <div class="header-content">
                         <div>
                             <h2>Select a File to Load</h2>
-                            <p>Choose a GeoJSON file with map data or a schema file to get started</p>
+                            <p>Files are loaded from <code>data/geometa/</code> (GeoJSON) and <code>schemas/</code> (JSON) directories. Place your files there to see them listed here.</p>
                         </div>
                         <div class="header-buttons">
                             <button id="refresh-files-btn" class="btn btn-outline" title="Refresh file list">
@@ -305,8 +305,14 @@ class FileBrowser {
             console.log('No files found, showing no files message');
             filesList.innerHTML = `
                 <div class="no-files-message">
-                    <p>No files found in data/geometa/ or schemas/ directories.</p>
-                    <p>Use the file picker to load a file from anywhere on your system.</p>
+                    <p>No files found in <code>data/geometa/</code> or <code>schemas/</code> directories.</p>
+                    <p>To add files:</p>
+                    <ul>
+                        <li>Place GeoJSON files in <code>data/geometa/</code> directory</li>
+                        <li>Place schema files in <code>schemas/</code> directory</li>
+                        <li>Click "Refresh" to scan for new files</li>
+                    </ul>
+                    <p>Or use the "Load File" button to load files from anywhere on your system.</p>
                 </div>
             `;
             return;
