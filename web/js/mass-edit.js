@@ -348,30 +348,56 @@ function applyMassEditToSelected() {
         }
     });
     
-    // Update map styling to reflect new data
+    // Update map styling to reflect new data with proper meta highlighting
     if (window.GeoMetaApp && window.GeoMetaApp.updateMapStylingForCountries) {
         window.GeoMetaApp.updateMapStylingForCountries(selectedCountries);
     } else if (window.GeoMetaApp && window.GeoMetaApp.updateMapStyling) {
         window.GeoMetaApp.updateMapStyling();
     }
     
+    // Update the map colors to show the new meta data highlighting
+    if (window.updateMapColors && currentMassEditField) {
+        // Get the field type and possible values for proper coloring
+        let fieldType = 'categorical';
+        let possibleValues = [];
+        
+        // Determine field type and get possible values
+        if (window.DynamicMeta) {
+            const schema = window.DynamicMeta.getFieldSchema(currentMassEditField);
+            if (schema) {
+                if (schema.type === 'range' || currentMassEditField.includes('_hot') || currentMassEditField.includes('_lush') || currentMassEditField.includes('_mountainous')) {
+                    fieldType = 'scale';
+                    possibleValues = [1, 2, 3, 4, 5];
+                } else if (schema.type === 'boolean') {
+                    fieldType = 'categorical';
+                    possibleValues = [true, false];
+                } else if (schema.type === 'array' || schema.type === 'enum') {
+                    fieldType = 'categorical';
+                    // Get unique values from the data
+                    const uniqueValues = new Set();
+                    window.GeoMetaApp.currentData.features.forEach(feature => {
+                        if (feature.properties.geo_meta && feature.properties.geo_meta[currentMassEditField]) {
+                            const value = feature.properties.geo_meta[currentMassEditField];
+                            if (Array.isArray(value)) {
+                                value.forEach(v => uniqueValues.add(v));
+                            } else {
+                                uniqueValues.add(value);
+                            }
+                        }
+                    });
+                    possibleValues = Array.from(uniqueValues);
+                }
+            }
+        }
+        
+        // Update map colors to show the new meta highlighting
+        window.updateMapColors(currentMassEditField, fieldType, possibleValues);
+    }
+    
     updateCountryCount();
     
-    // Deselect all countries after applying changes
+    // Clear selection styling but keep the meta highlighting
     selectedCountries.clear();
-    window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
-        const originalColor = window.originalColors.get(layer);
-        if (originalColor) {
-            layer.setStyle(originalColor);
-        } else {
-            layer.setStyle({
-                fillColor: '#95a5a6',
-                weight: 0.5,
-                color: '#7f8c8d',
-                fillOpacity: 0.3
-            });
-        }
-    });
     
     // Update selection count
     updateSelectionCount();

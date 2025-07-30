@@ -532,6 +532,10 @@ window.Legend = {
     getColorForValue
 };
 
+// Export key functions directly to window for easy access
+window.updateMapColors = updateMapColors;
+window.clearLegend = clearLegend;
+
 // Export state for use by other modules
 window.selectedLegendValues = selectedLegendValues;
 
