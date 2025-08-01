@@ -636,7 +636,8 @@ window.MassEdit = {
     generateMassEditField,
     collectMassEditValue,
     resetMapInteraction,
-    clearMassSelectionStyling
+    clearMassSelectionStyling,
+    showApplyButtonSuccess
 };
 
 // Initialize when DOM is loaded

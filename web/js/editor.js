@@ -63,6 +63,26 @@ function clearFieldHighlights() {
 }
 
 /**
+ * Show success message on save button
+ */
+function showSaveButtonSuccess() {
+    const saveButton = document.querySelector('button[type="submit"], #save-btn, .btn-primary');
+    if (saveButton) {
+        const originalText = saveButton.textContent;
+        saveButton.textContent = '✅ Saved!';
+        saveButton.style.backgroundColor = '#28a745';
+        saveButton.style.color = 'white';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            saveButton.textContent = originalText;
+            saveButton.style.backgroundColor = '';
+            saveButton.style.color = '';
+        }, 2000);
+    }
+}
+
+/**
  * Find the form element for a specific field
  */
 function findFieldElement(fieldName) {
@@ -411,7 +431,8 @@ function collectDynamicField(field, schema) {
         case 'string':
             const radios = document.querySelectorAll(`input[name="${field}"]:checked`);
             if (radios.length > 0) {
-                return Array.from(radios).map(r => r.value);
+                // For single radio buttons, return the value directly
+                return radios[0].value;
             }
             const select = document.querySelector(`select[name="${field}"]`);
             if (select && select.value !== '') {
@@ -459,7 +480,14 @@ function collectCheckboxValues(name) {
  */
 function collectRadioValue(name) {
     const radio = document.querySelector(`input[name="${name}"]:checked`);
-    return radio ? [radio.value] : null;
+    if (!radio) return null;
+    
+    // Return array for multi-value fields, string for single-value fields
+    if (name === 'driving-side' || name === 'road-quality' || name === 'soil-color') {
+        return [radio.value];
+    } else {
+        return radio.value;
+    }
 }
 
 /**
@@ -546,6 +574,8 @@ function saveGeoMetaData() {
     }
     
     const geoMeta = collectFormData();
+    console.log('Collected form data:', geoMeta);
+    console.log('Hemisphere value:', geoMeta.hemisphere, 'Type:', typeof geoMeta.hemisphere);
     
     // Validate data
     const errors = validateGeoMeta(geoMeta);
@@ -557,8 +587,57 @@ function saveGeoMetaData() {
     // Update the feature
     currentEditingFeature.properties.geo_meta = geoMeta;
     
-    // Update the map
-    updateMapStyling();
+    // Update only this specific country on the map (like mass edit)
+    const countryName = getCountryName(currentEditingFeature);
+    const countrySet = new Set([countryName]);
+    
+    if (window.GeoMetaApp && window.GeoMetaApp.updateMapStylingForCountries) {
+        window.GeoMetaApp.updateMapStylingForCountries(countrySet);
+    }
+    
+    // Update map colors to reflect the new meta data (like mass edit)
+    if (window.updateMapColors) {
+        // Find which meta field was being viewed and update colors
+        const currentMetaField = window.MetaFieldsList ? window.MetaFieldsList.getCurrentMetaField() : null;
+        if (currentMetaField) {
+            // Get the field type and possible values for proper coloring
+            let fieldType = 'categorical';
+            let possibleValues = [];
+            
+            // Determine field type and get possible values
+            if (window.DynamicMeta) {
+                const schema = window.DynamicMeta.getFieldSchema(currentMetaField);
+                if (schema) {
+                    if (schema.type === 'range' || currentMetaField.includes('_hot') || currentMetaField.includes('_lush') || currentMetaField.includes('_mountainous')) {
+                        fieldType = 'scale';
+                        possibleValues = [1, 2, 3, 4, 5];
+                    } else if (schema.type === 'boolean') {
+                        fieldType = 'categorical';
+                        possibleValues = [true, false];
+                    } else if (schema.type === 'array' || schema.type === 'enum') {
+                        fieldType = 'categorical';
+                        // Get unique values from the data
+                        const uniqueValues = new Set();
+                        window.GeoMetaApp.currentData.features.forEach(feature => {
+                            if (feature.properties.geo_meta && feature.properties.geo_meta[currentMetaField]) {
+                                const value = feature.properties.geo_meta[currentMetaField];
+                                if (Array.isArray(value)) {
+                                    value.forEach(v => uniqueValues.add(v));
+                                } else {
+                                    uniqueValues.add(value);
+                                }
+                            }
+                        });
+                        possibleValues = Array.from(uniqueValues);
+                    }
+                }
+            }
+            
+            // Update map colors to show the new meta highlighting
+            window.updateMapColors(currentMetaField, fieldType, possibleValues);
+        }
+    }
+    
     updateCountryCount();
     
     // Clear field highlights
@@ -567,7 +646,8 @@ function saveGeoMetaData() {
     // Update popup content
     updatePopupContent(currentEditingFeature);
     
-    showSuccess('GeoMeta data saved successfully');
+    // Show success message on save button
+    showSaveButtonSuccess();
 }
 
 /**
