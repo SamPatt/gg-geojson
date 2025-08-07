@@ -45,22 +45,22 @@ const colorPalettes = {
         scale: ['#8B0000', '#DC143C', '#FF4500', '#FF6347', '#FFE4E1'] // Dark to Light Red
     },
     
-    // Palette 4: Pastel (Soft, gentle)
+    // Palette 4: Pastel (Soft, gentle but visible)
     pastel: {
         categorical: [
-            '#FFB6C1', '#87CEEB', '#98FB98', '#F0E68C', '#DDA0DD',
-            '#F5DEB3', '#E6E6FA', '#FFE4E1', '#E0FFFF', '#F0FFF0'
+            '#FF6B9D', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
         ],
-        scale: ['#FFB6C1', '#FFC0CB', '#FFE4E1', '#F0F8FF', '#F0FFF0'] // Pink to White
+        scale: ['#FF6B9D', '#FF8E9E', '#FFB1A0', '#FFD4A2', '#FFF7A4'] // Pink to Yellow
     },
     
     // Palette 5: High Contrast (Accessibility focused)
     highContrast: {
         categorical: [
-            '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
-            '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080'
+            '#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00',
+            '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#008000'
         ],
-        scale: ['#000000', '#333333', '#666666', '#999999', '#FFFFFF'] // Black to White
+        scale: ['#000000', '#333333', '#666666', '#999999', '#CCCCCC'] // Black to Light Gray
     }
 };
 
@@ -200,20 +200,7 @@ function getCategoricalColor(value, fieldName) {
  * Get sorted list of all possible values for a field
  */
 function getSortedValuesForField(fieldName) {
-    // Define standard value orders for common fields
-    const standardOrders = {
-        'has_official_coverage': [false, true],
-        'driving_side': ['left', 'right'],
-        'hemisphere': ['N', 'S', 'E'],
-        'road_quality': ['poor', 'maintained'],
-        'soil_color': ['red', 'brown', 'gray', 'black', 'other']
-    };
-    
-    if (standardOrders[fieldName]) {
-        return standardOrders[fieldName];
-    }
-    
-    // For other fields, get all unique values from the data and sort them
+    // Get all unique values from the data dynamically
     const uniqueValues = new Set();
     if (window.GeoMetaApp.currentData) {
         window.GeoMetaApp.currentData.features.forEach(feature => {
@@ -230,6 +217,7 @@ function getSortedValuesForField(fieldName) {
         });
     }
     
+    // Return sorted array of unique values
     return Array.from(uniqueValues).sort();
 }
 
@@ -273,7 +261,9 @@ function createLegend(fieldName, fieldType, possibleValues) {
         legendHTML += '</div>';
     } else {
         // Create categorical legend - include null value
-        const allValues = [...possibleValues, null];
+        // Use the same sorted values that the map uses for consistent color assignment
+        const sortedValues = getSortedValuesForField(fieldName);
+        const allValues = [...sortedValues, null];
         legendHTML += '<div class="legend-categorical">';
         allValues.forEach(value => {
             const color = getCategoricalColor(value, fieldName);
