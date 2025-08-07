@@ -77,9 +77,38 @@ function startMetaAnalysis(field, fieldName) {
     
     // Get field schema for legend
     const schema = window.DynamicMeta.getFieldSchema(field);
-    if (schema && window.Legend) {
+    console.log('Meta analysis - field:', field, 'schema:', schema, 'Legend available:', !!window.Legend);
+    console.log('Available schemas:', window.DynamicMeta ? Object.keys(window.DynamicMeta.metaFieldSchemas || {}) : 'DynamicMeta not available');
+    console.log('window.Legend object:', window.Legend);
+    console.log('window.updateMapColors function:', typeof window.updateMapColors);
+    if (schema && (window.Legend || window.updateMapColors)) {
+        // Map schema type to legend type
+        let legendType = 'categorical';
+        let possibleValues = schema.possibleValues || [];
+        
+        if (schema.type === 'scale' || field.includes('_hot') || field.includes('_lush') || field.includes('_mountainous')) {
+            legendType = 'scale';
+            possibleValues = [1, 2, 3, 4, 5];
+        } else if (schema.type === 'boolean') {
+            legendType = 'categorical';
+            possibleValues = [true, false];
+        } else if (schema.type === 'array' || schema.type === 'string') {
+            legendType = 'categorical';
+            possibleValues = schema.possibleValues || [];
+        }
+        
         // Update map colors and create legend
-        window.Legend.updateMapColors(field, schema.type, schema.possibleValues);
+        console.log('Calling updateMapColors with:', field, legendType, possibleValues);
+        if (window.Legend) {
+            window.Legend.updateMapColors(field, legendType, possibleValues);
+        } else if (window.updateMapColors) {
+            window.updateMapColors(field, legendType, possibleValues);
+        }
+    } else {
+        console.error('Cannot update map colors - schema or Legend not available');
+        console.log('Schema:', schema);
+        console.log('Legend:', window.Legend);
+        console.log('updateMapColors function:', typeof window.updateMapColors);
     }
     
     // Analyze the data

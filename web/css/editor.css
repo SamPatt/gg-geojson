@@ -99,7 +99,7 @@
 }
 
 .checkbox-group label:hover {
-    background: #f8f9fa;
+    background: rgba(33, 150, 243, 0.05);
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -125,7 +125,7 @@
 }
 
 .radio-group label:hover {
-    background: #f8f9fa;
+    background: rgba(33, 150, 243, 0.05);
 }
 
 .radio-group input[type="radio"] {
@@ -397,11 +397,11 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .meta-field-item:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(33, 150, 243, 0.05);
 }
 
 .meta-field-item.selected {
-    background-color: #e3f2fd;
+    background-color: rgba(33, 150, 243, 0.05);
     border-left: 3px solid #2196f3;
 }
 
@@ -457,7 +457,7 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .meta-field-edit-btn:hover {
-    background-color: #e3f2fd;
+    background-color: rgba(33, 150, 243, 0.05);
 }
 
 .loading-meta-fields {
@@ -547,7 +547,7 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .country-meta-field-item:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(33, 150, 243, 0.05);
 }
 
 .country-meta-field-item:last-child {
@@ -686,7 +686,7 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .country-meta-field-edit-btn:hover {
-    background-color: #e3f2fd;
+    background-color: rgba(33, 150, 243, 0.05);
 }
 
 .loading-country-meta-fields {
@@ -820,12 +820,12 @@ select[name*="has_official_coverage"] option[value="false"] {
 
 /* Editing state styling */
 .form-group.editing {
-    background-color: #fff3cd;
+    background-color: rgba(255, 193, 7, 0.05);
     border: 2px solid #ffc107;
     border-radius: 8px;
     padding: 1rem;
     margin: 0.5rem 0;
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.1);
     position: relative;
 }
 
@@ -995,7 +995,7 @@ select[name*="has_official_coverage"] option[value="false"] {
 
 #mass-edit-field-container .radio-group label:hover,
 #mass-edit-field-container .checkbox-group label:hover {
-    background: #e3f2fd;
+    background: rgba(33, 150, 243, 0.05);
     border-color: #2196f3;
 }
 
@@ -1127,7 +1127,7 @@ select[name*="has_official_coverage"] option[value="false"] {
 }
 
 .country-item:hover {
-    background: #f8f9fa;
+    background: rgba(33, 150, 243, 0.05);
 }
 
 .country-item:last-child {

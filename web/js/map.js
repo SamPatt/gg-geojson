@@ -14,9 +14,9 @@ function initMap() {
     // Create map centered on the world
     map = L.map('map').setView([20, 0], 2);
     
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
+    // Add CartoDB Voyager tiles (Google Maps-like style)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© CartoDB',
         maxZoom: 19
     }).addTo(map);
     
@@ -38,8 +38,7 @@ function initMap() {
         closeEditor();
     });
     
-    // Add equator line
-    addEquatorLine();
+    // Equator line removed
     
     console.log('Map initialized');
 }
@@ -70,10 +69,10 @@ function loadGeoJSONData(geoJsonData) {
         style: function(feature) {
             return {
                 fillColor: '#95a5a6',
-                weight: 0.5,
-                opacity: 1,
-                color: '#7f8c8d',
-                fillOpacity: 0.3  // Very transparent default
+                weight: 0.3,
+                opacity: 0.8,
+                color: '#bdc3c7',
+                fillOpacity: 0.15  // More transparent default
             };
         },
         onEachFeature: function(feature, layer) {
@@ -123,10 +122,10 @@ function loadGeoJSONData(geoJsonData) {
                     
                     // Apply hover style
                     e.target.setStyle({
-                        fillColor: '#d5dbdb',
-                        weight: 1,
-                        color: '#bdc3c7',
-                        fillOpacity: 0.8
+                        fillColor: '#e3f2fd',
+                        weight: 0.5,
+                        color: '#2196f3',
+                        fillOpacity: 0.3
                     });
                 }
             });
@@ -143,13 +142,13 @@ function loadGeoJSONData(geoJsonData) {
                     if (originalColor) {
                         e.target.setStyle(originalColor);
                     } else {
-                        // Fallback to default gray
-                        e.target.setStyle({
-                            fillColor: '#95a5a6',
-                            weight: 0.5,
-                            color: '#7f8c8d',
-                            fillOpacity: 0.3
-                        });
+                                            // Fallback to default gray
+                    e.target.setStyle({
+                        fillColor: '#95a5a6',
+                        weight: 0.3,
+                        color: '#bdc3c7',
+                        fillOpacity: 0.15
+                    });
                     }
                 }
             });
@@ -176,12 +175,12 @@ function clearSelection() {
         if (originalColor) {
             selectedCountry.setStyle(originalColor);
         } else {
-            selectedCountry.setStyle({
-                fillColor: '#95a5a6',
-                weight: 0.5,
-                color: '#7f8c8d',
-                fillOpacity: 0.3
-            });
+                    selectedCountry.setStyle({
+            fillColor: '#95a5a6',
+            weight: 0.3,
+            color: '#bdc3c7',
+            fillOpacity: 0.15
+        });
         }
         
         selectedCountry = null;
@@ -224,7 +223,7 @@ function selectCountry(feature, layer) {
         fillColor: '#3498db',
         weight: 2,
         color: '#2980b9',
-        fillOpacity: 0.8
+        fillOpacity: 0.4
     });
     
     selectedCountry = layer;
@@ -266,12 +265,12 @@ function updateMapStyling() {
         const geoMeta = feature.properties.geo_meta;
         
         if (geoMeta && !isEmptyGeoMeta(geoMeta)) {
-            // Countries with data get a different color
+            // Countries with data get a neutral color (will be overridden by legend if active)
             const style = {
-                fillColor: '#27ae60',
-                weight: 0.5,
-                color: '#229954',
-                fillOpacity: 0.8
+                fillColor: '#95a5a6',
+                weight: 0.3,
+                color: '#bdc3c7',
+                fillOpacity: 0.3
             };
             
             // Store as original color
@@ -281,9 +280,9 @@ function updateMapStyling() {
             // Countries without data
             const style = {
                 fillColor: '#95a5a6',
-                weight: 0.5,
-                color: '#7f8c8d',
-                fillOpacity: 0.3
+                weight: 0.3,
+                color: '#bdc3c7',
+                fillOpacity: 0.15
             };
             
             // Store as original color
@@ -383,25 +382,7 @@ function addMapControls() {
     });
 }
 
-/**
- * Add equator line to the map
- */
-function addEquatorLine() {
-    if (!map) return;
-    
-    // Create equator line (latitude 0)
-    const equatorLine = L.polyline([
-        [0, -180],  // Equator at 180°W
-        [0, 180]    // Equator at 180°E
-    ], {
-        color: '#e74c3c',
-        weight: 2,
-        opacity: 0.8,
-        dashArray: '5, 5'
-    }).addTo(map);
-    
-    console.log('Equator line added to map');
-}
+
 
 // Export functions globally
 window.GeoMetaApp = window.GeoMetaApp || {};

@@ -5,22 +5,130 @@
 let currentLegend = null;
 let selectedLegendValues = new Set();
 let currentLegendField = null;
-let colorSchemes = {
-    // Categorical color schemes
-    categorical: [
-        '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
-        '#1abc9c', '#e67e22', '#34495e', '#f1c40f', '#e91e63'
-    ],
+let currentColorPalette = 0; // Index of current palette
+
+// Multiple color palettes for different visualization styles
+const colorPalettes = {
+    // Palette 0: Classic Infographic (High contrast, accessible)
+    classic: {
+        categorical: [
+            '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
+            '#1abc9c', '#e67e22', '#34495e', '#f1c40f', '#e91e63'
+        ],
+        scale: ['#d73027', '#fc8d59', '#fee08b', '#91bfdb', '#4575b4'] // Red to Blue
+    },
     
-    // Scale color schemes (quintile)
-    scale: ['#d73027', '#fc8d59', '#fee08b', '#91bfdb', '#4575b4'] // Red to Blue
+    // Palette 1: Earth Tones (Natural, mapping-friendly)
+    earth: {
+        categorical: [
+            '#8B4513', '#228B22', '#4682B4', '#DAA520', '#CD853F',
+            '#20B2AA', '#8A2BE2', '#DC143C', '#32CD32', '#FF6347'
+        ],
+        scale: ['#8B4513', '#D2691E', '#F4A460', '#98FB98', '#228B22'] // Brown to Green
+    },
+    
+    // Palette 2: Cool Blues (Ocean/water themed)
+    cool: {
+        categorical: [
+            '#1E90FF', '#00CED1', '#4169E1', '#00BFFF', '#87CEEB',
+            '#4682B4', '#20B2AA', '#48D1CC', '#40E0D0', '#00FFFF'
+        ],
+        scale: ['#000080', '#0000CD', '#4169E1', '#87CEEB', '#F0F8FF'] // Dark to Light Blue
+    },
+    
+    // Palette 3: Warm Reds (Fire/heat themed)
+    warm: {
+        categorical: [
+            '#DC143C', '#FF4500', '#FF6347', '#FF7F50', '#FF8C00',
+            '#FFA500', '#FFD700', '#FFFF00', '#FFE4B5', '#FFE4E1'
+        ],
+        scale: ['#8B0000', '#DC143C', '#FF4500', '#FF6347', '#FFE4E1'] // Dark to Light Red
+    },
+    
+    // Palette 4: Pastel (Soft, gentle)
+    pastel: {
+        categorical: [
+            '#FFB6C1', '#87CEEB', '#98FB98', '#F0E68C', '#DDA0DD',
+            '#F5DEB3', '#E6E6FA', '#FFE4E1', '#E0FFFF', '#F0FFF0'
+        ],
+        scale: ['#FFB6C1', '#FFC0CB', '#FFE4E1', '#F0F8FF', '#F0FFF0'] // Pink to White
+    },
+    
+    // Palette 5: High Contrast (Accessibility focused)
+    highContrast: {
+        categorical: [
+            '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
+            '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080'
+        ],
+        scale: ['#000000', '#333333', '#666666', '#999999', '#FFFFFF'] // Black to White
+    }
 };
+
+let colorSchemes = colorPalettes.classic; // Default to classic palette
 
 /**
  * Initialize the legend system
  */
 function initLegend() {
     console.log('Legend system initialized');
+    console.log('window.Legend available in initLegend:', !!window.Legend);
+}
+
+/**
+ * Switch to a different color palette
+ */
+function switchColorPalette(paletteIndex) {
+    const paletteNames = Object.keys(colorPalettes);
+    if (paletteIndex >= 0 && paletteIndex < paletteNames.length) {
+        currentColorPalette = paletteIndex;
+        const paletteName = paletteNames[paletteIndex];
+        colorSchemes = colorPalettes[paletteName];
+        
+        console.log(`Switched to ${paletteName} palette`);
+        
+        // Update current legend if one exists
+        if (currentLegend && currentLegendField) {
+            const schema = window.DynamicMeta ? window.DynamicMeta.getFieldSchema(currentLegendField) : null;
+            if (schema) {
+                updateMapColors(currentLegendField, schema.type, schema.possibleValues);
+            }
+        }
+        
+        return paletteName;
+    }
+    return null;
+}
+
+/**
+ * Get current palette name
+ */
+function getCurrentPaletteName() {
+    const paletteNames = Object.keys(colorPalettes);
+    return paletteNames[currentColorPalette];
+}
+
+/**
+ * Get available palette names
+ */
+function getAvailablePalettes() {
+    return Object.keys(colorPalettes);
+}
+
+/**
+ * Cycle through available color palettes
+ */
+function cyclePalette() {
+    const paletteNames = Object.keys(colorPalettes);
+    const nextPalette = (currentColorPalette + 1) % paletteNames.length;
+    const paletteName = switchColorPalette(nextPalette);
+    
+    // Update palette name display
+    const paletteNameSpan = document.querySelector('.palette-name');
+    if (paletteNameSpan) {
+        paletteNameSpan.textContent = paletteName;
+    }
+    
+    return paletteName;
 }
 
 /**
@@ -35,17 +143,25 @@ function getColorForValue(value, fieldType, fieldName) {
 }
 
 /**
- * Get color for scale values (1-5)
+ * Get color for scale values
  */
 function getScaleColor(value) {
-    if (!value || typeof value !== 'object' || !value.min || !value.max) {
-        return '#95a5a6'; // Default gray for null/invalid
+    if (value === null || value === undefined) {
+        return '#95a5a6'; // Gray for null values
     }
     
-    // Use the average of min and max for color
-    const avg = Math.round((value.min + value.max) / 2);
-    const index = Math.max(0, Math.min(4, avg - 1)); // Ensure 0-4 range
-    return colorSchemes.scale[index];
+    // For scale values, use the average of min and max
+    let numericValue;
+    if (typeof value === 'object' && value.min !== undefined && value.max !== undefined) {
+        numericValue = (value.min + value.max) / 2;
+    } else {
+        numericValue = parseFloat(value) || 3; // Default to middle value
+    }
+    
+    // Clamp to 1-5 range
+    numericValue = Math.max(1, Math.min(5, numericValue));
+    const index = Math.floor(numericValue) - 1;
+    return colorSchemes.scale[index] || colorSchemes.scale[2]; // Default to middle color
 }
 
 /**
@@ -56,23 +172,65 @@ function getCategoricalColor(value, fieldName) {
         return '#95a5a6'; // Gray for null values
     }
     
-    // Special handling for boolean fields
-    if (fieldName === 'has_official_coverage') {
-        if (value === true || value === 'true') {
-            return '#28a745'; // Green for true
-        } else if (value === false || value === 'false') {
-            return '#dc3545'; // Red for false
-        }
+    // Handle array values (like driving_side: ["left"])
+    let actualValue = value;
+    if (Array.isArray(value) && value.length > 0) {
+        actualValue = value[0]; // Use the first value in the array
     }
     
-    // Create a consistent hash for the field name and value
-    const hash = `${fieldName}-${value}`.split('').reduce((a, b) => {
-        a = ((a << 5) - a) + b.charCodeAt(0);
-        return a & a;
-    }, 0);
+    // Get the index of this value in the sorted list of all possible values
+    // This ensures systematic color assignment: first value = first color, second value = second color, etc.
+    const allValues = getSortedValuesForField(fieldName);
+    const index = allValues.indexOf(actualValue);
     
-    const index = Math.abs(hash) % colorSchemes.categorical.length;
-    return colorSchemes.categorical[index];
+    if (index === -1) {
+        // Fallback to hash if value not found in expected list
+        const valueString = String(actualValue);
+        const hash = valueString.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+        return colorSchemes.categorical[Math.abs(hash) % colorSchemes.categorical.length];
+    }
+    
+    return colorSchemes.categorical[index % colorSchemes.categorical.length];
+}
+
+/**
+ * Get sorted list of all possible values for a field
+ */
+function getSortedValuesForField(fieldName) {
+    // Define standard value orders for common fields
+    const standardOrders = {
+        'has_official_coverage': [false, true],
+        'driving_side': ['left', 'right'],
+        'hemisphere': ['N', 'S', 'E'],
+        'road_quality': ['poor', 'maintained'],
+        'soil_color': ['red', 'brown', 'gray', 'black', 'other']
+    };
+    
+    if (standardOrders[fieldName]) {
+        return standardOrders[fieldName];
+    }
+    
+    // For other fields, get all unique values from the data and sort them
+    const uniqueValues = new Set();
+    if (window.GeoMetaApp.currentData) {
+        window.GeoMetaApp.currentData.features.forEach(feature => {
+            if (feature.properties.geo_meta && feature.properties.geo_meta[fieldName] !== undefined) {
+                const value = feature.properties.geo_meta[fieldName];
+                if (value !== null && value !== undefined) {
+                    if (Array.isArray(value)) {
+                        value.forEach(v => uniqueValues.add(v));
+                    } else {
+                        uniqueValues.add(value);
+                    }
+                }
+            }
+        });
+    }
+    
+    return Array.from(uniqueValues).sort();
 }
 
 /**
@@ -87,7 +245,17 @@ function createLegend(fieldName, fieldType, possibleValues) {
     legendContainer.className = 'map-legend';
     legendContainer.id = 'dynamic-legend';
     
-    let legendHTML = `<h4>${formatFieldName(fieldName)}</h4>`;
+    let legendHTML = `
+        <div class="legend-header">
+            <h4>${formatFieldName(fieldName)}</h4>
+            <div class="palette-controls">
+                <button class="palette-btn" onclick="window.cyclePalette()" title="Switch Color Palette">
+                    🎨
+                </button>
+                <span class="palette-name">${getCurrentPaletteName()}</span>
+            </div>
+        </div>
+    `;
     
     if (fieldType === 'scale') {
         // Create scale legend
@@ -130,7 +298,7 @@ function createLegend(fieldName, fieldType, possibleValues) {
     mapContainer.appendChild(legendContainer);
     
     currentLegend = legendContainer;
-    console.log('Legend created for', fieldName);
+    currentLegendField = fieldName;
 }
 
 /**
@@ -392,9 +560,23 @@ function restoreAllLegendColors() {
  * Update map colors based on selected meta field
  */
 function updateMapColors(fieldName, fieldType, possibleValues) {
-    if (!window.GeoMetaApp.geoJsonLayer) return;
+    console.log('updateMapColors called with:', fieldName, fieldType, possibleValues);
+    if (!window.GeoMetaApp.geoJsonLayer) {
+        console.error('No GeoJSON layer available');
+        return;
+    }
     
     console.log('Updating map colors for', fieldName, 'type:', fieldType, 'values:', possibleValues);
+    
+    // Clear any existing legend first
+    if (currentLegend) {
+        currentLegend.remove();
+        currentLegend = null;
+    }
+    
+    // Clear selection state
+    selectedLegendValues.clear();
+    currentLegendField = fieldName;
     
     window.GeoMetaApp.geoJsonLayer.eachLayer(function(layer) {
         const feature = layer.feature;
@@ -409,9 +591,9 @@ function updateMapColors(fieldName, fieldType, possibleValues) {
         if (window.originalColors) {
             window.originalColors.set(layer, {
                 fillColor: color,
-                weight: 1,
-                color: '#7f8c8d',
-                fillOpacity: 0.8
+                weight: 0.5,
+                color: '#bdc3c7',
+                fillOpacity: 0.6
             });
         }
         
@@ -419,9 +601,9 @@ function updateMapColors(fieldName, fieldType, possibleValues) {
         if (layer !== window.selectedCountry) {
             layer.setStyle({
                 fillColor: color,
-                weight: 1,
-                color: '#7f8c8d',
-                fillOpacity: 0.8
+                weight: 0.5,
+                color: '#bdc3c7',
+                fillOpacity: 0.6
             });
         }
     });
@@ -529,12 +711,19 @@ window.Legend = {
     createLegend,
     updateMapColors,
     clearLegend,
-    getColorForValue
+    getColorForValue,
+    switchColorPalette,
+    getCurrentPaletteName,
+    getAvailablePalettes,
+    cyclePalette
 };
+
+console.log('Legend module loaded, window.Legend created:', !!window.Legend);
 
 // Export key functions directly to window for easy access
 window.updateMapColors = updateMapColors;
 window.clearLegend = clearLegend;
+window.cyclePalette = cyclePalette;
 
 // Export state for use by other modules
 window.selectedLegendValues = selectedLegendValues;
