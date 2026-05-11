@@ -298,6 +298,12 @@ function formatMetaValueForDisplay(fieldName, value) {
                 return value.map(v => v === 'maintained' ? 'Maintained' : 'Poor').join(', ');
             }
             return value === 'maintained' ? 'Maintained' : 'Poor';
+
+        case 'road_lines':
+            if (Array.isArray(value)) {
+                return value.map(formatRoadLineProfileForCountryList).join('; ');
+            }
+            return formatRoadLineProfileForCountryList(value);
             
         case 'has_official_coverage':
             return value ? 'Yes' : 'No';
@@ -322,6 +328,28 @@ function formatMetaValueForDisplay(fieldName, value) {
             }
             return value;
     }
+}
+
+function formatRoadLineProfileForCountryList(profile) {
+    if (!profile || typeof profile !== 'object') return 'No data';
+    if (profile.type === 'none') return 'No visible line markings';
+
+    const parts = [];
+    if (Array.isArray(profile.outer) && profile.outer.length > 0) {
+        parts.push(`Outer: ${profile.outer.map(formatRoadLineMarkingForCountryList).join(' + ')}`);
+    }
+    if (Array.isArray(profile.inner) && profile.inner.length > 0) {
+        parts.push(`Inner: ${profile.inner.map(formatRoadLineMarkingForCountryList).join(' + ')}`);
+    }
+
+    return parts.length > 0 ? parts.join('; ') : 'Marked lines';
+}
+
+function formatRoadLineMarkingForCountryList(line) {
+    return [line.pattern, line.number, line.color]
+        .filter(Boolean)
+        .map(value => String(value).replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()))
+        .join(' ');
 }
 
 /**

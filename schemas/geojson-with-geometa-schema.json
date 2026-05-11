@@ -92,28 +92,12 @@
       "enum": ["N", "S", "E"]
     },
         "road_lines": {
-          "type": ["object", "null"],
-          "description": "Road line markings configuration",
-          "properties": {
-            "inner": {
-              "type": "array",
-              "description": "Inner road line markings",
-              "items": {
-                "$ref": "#/definitions/roadLine"
-              },
-              "minItems": 0
-            },
-            "outer": {
-              "type": "array",
-              "description": "Outer road line markings",
-              "items": {
-                "$ref": "#/definitions/roadLine"
-              },
-              "minItems": 0
-            }
+          "type": ["array", "null"],
+          "description": "Common valid road line marking profiles. Null means unknown/not entered; use a profile with type 'none' when roads commonly have no visible line markings.",
+          "items": {
+            "$ref": "#/definitions/roadLineProfile"
           },
-          "required": ["inner", "outer"],
-          "additionalProperties": false
+          "minItems": 1
         },
         "road_quality": {
           "type": ["array", "null"],
@@ -171,27 +155,76 @@
       ],
       "additionalProperties": false
     },
-    "roadLine": {
+    "roadLineProfile": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "A valid combination of inner and/or outer road line markings.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["marked"],
+              "description": "Profile type for roads with visible line markings"
+            },
+            "inner": {
+              "type": "array",
+              "description": "Center/inner lane-divider line markings.",
+              "items": {
+                "$ref": "#/definitions/roadLineMarking"
+              },
+              "minItems": 1
+            },
+            "outer": {
+              "type": "array",
+              "description": "Outer/edge line markings.",
+              "items": {
+                "$ref": "#/definitions/roadLineMarking"
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["type"],
+          "anyOf": [
+            { "required": ["inner"] },
+            { "required": ["outer"] }
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "Roads commonly have no visible line markings.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["none"]
+            }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "roadLineMarking": {
       "type": "object",
-      "description": "Individual road line configuration",
+      "description": "Individual road line marking.",
       "properties": {
+        "pattern": {
+          "type": "string",
+          "enum": ["solid", "short_dashed", "long_dashed", "other"],
+          "description": "Line pattern"
+        },
         "number": {
           "type": "string",
           "enum": ["single", "double", "triple"],
-          "description": "Number of lines"
+          "description": "Number of parallel lines"
         },
         "color": {
           "type": "string",
-          "enum": ["white", "yellow", "other"],
+          "enum": ["white", "yellow", "orange", "other"],
           "description": "Color of the road lines"
-        },
-        "pattern": {
-          "type": "string",
-          "enum": ["solid", "dashed", "zigzag"],
-          "description": "Pattern of the road lines"
         }
       },
-      "required": ["number", "color", "pattern"],
+      "required": ["pattern", "number", "color"],
       "additionalProperties": false
     },
     "quintileScale": {

@@ -310,6 +310,12 @@ function formatMetaValueForDisplay(field, value) {
                 return value.map(v => v === 'maintained' ? 'M' : 'P').join(',');
             }
             return value === 'maintained' ? 'M' : 'P';
+
+        case 'road_lines':
+            if (Array.isArray(value)) {
+                return value.map(formatRoadLineProfileForAnalysis).join('; ');
+            }
+            return formatRoadLineProfileForAnalysis(value);
             
         case 'has_official_coverage':
             return value ? 'Y' : 'N';
@@ -331,6 +337,28 @@ function formatMetaValueForDisplay(field, value) {
         default:
             return value;
     }
+}
+
+function formatRoadLineProfileForAnalysis(profile) {
+    if (!profile || typeof profile !== 'object') return 'null';
+    if (profile.type === 'none') return 'No lines';
+
+    const parts = [];
+    if (Array.isArray(profile.outer) && profile.outer.length > 0) {
+        parts.push(`Outer ${profile.outer.map(formatRoadLineMarkingForAnalysis).join(' + ')}`);
+    }
+    if (Array.isArray(profile.inner) && profile.inner.length > 0) {
+        parts.push(`Inner ${profile.inner.map(formatRoadLineMarkingForAnalysis).join(' + ')}`);
+    }
+
+    return parts.length > 0 ? parts.join('; ') : 'Marked lines';
+}
+
+function formatRoadLineMarkingForAnalysis(line) {
+    return [line.pattern, line.number, line.color]
+        .filter(Boolean)
+        .map(value => String(value).replace(/_/g, ' '))
+        .join(' ');
 }
 
 /**

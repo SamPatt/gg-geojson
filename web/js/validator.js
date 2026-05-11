@@ -30,31 +30,12 @@ function validateGeoMetaSchema(geoMeta) {
     
     // Validate road_lines
     if (geoMeta.road_lines !== null) {
-        if (typeof geoMeta.road_lines !== 'object') {
-            errors.push('road_lines must be an object or null');
+        if (!Array.isArray(geoMeta.road_lines)) {
+            errors.push('road_lines must be an array or null');
         } else {
-            if (geoMeta.road_lines.inner && !Array.isArray(geoMeta.road_lines.inner)) {
-                errors.push('road_lines.inner must be an array');
-            }
-            if (geoMeta.road_lines.outer && !Array.isArray(geoMeta.road_lines.outer)) {
-                errors.push('road_lines.outer must be an array');
-            }
-            
-            // Validate inner lines
-            if (geoMeta.road_lines.inner) {
-                geoMeta.road_lines.inner.forEach((line, index) => {
-                    const lineErrors = validateRoadLine(line, `road_lines.inner[${index}]`);
-                    errors.push(...lineErrors);
-                });
-            }
-            
-            // Validate outer lines
-            if (geoMeta.road_lines.outer) {
-                geoMeta.road_lines.outer.forEach((line, index) => {
-                    const lineErrors = validateRoadLine(line, `road_lines.outer[${index}]`);
-                    errors.push(...lineErrors);
-                });
-            }
+            geoMeta.road_lines.forEach((profile, index) => {
+                errors.push(...validateRoadLineProfile(profile, `road_lines[${index}]`));
+            });
         }
     }
     
@@ -102,6 +83,59 @@ function validateGeoMetaSchema(geoMeta) {
 }
 
 /**
+ * Validate a road line profile object
+ */
+function validateRoadLineProfile(profile, path) {
+    const errors = [];
+
+    if (typeof profile !== 'object' || profile === null || Array.isArray(profile)) {
+        errors.push(`${path} must be an object`);
+        return errors;
+    }
+
+    if (!['marked', 'none'].includes(profile.type)) {
+        errors.push(`${path}.type must be one of: marked, none`);
+        return errors;
+    }
+
+    if (profile.type === 'none') {
+        const extraKeys = Object.keys(profile).filter(key => key !== 'type');
+        if (extraKeys.length > 0) {
+            errors.push(`${path} with type none must not include line details`);
+        }
+        return errors;
+    }
+
+    if (profile.inner !== undefined && !Array.isArray(profile.inner)) {
+        errors.push(`${path}.inner must be an array`);
+    }
+
+    if (profile.outer !== undefined && !Array.isArray(profile.outer)) {
+        errors.push(`${path}.outer must be an array`);
+    }
+
+    const hasInner = Array.isArray(profile.inner) && profile.inner.length > 0;
+    const hasOuter = Array.isArray(profile.outer) && profile.outer.length > 0;
+    if (!hasInner && !hasOuter) {
+        errors.push(`${path} must include at least one inner or outer line`);
+    }
+
+    if (Array.isArray(profile.inner)) {
+        profile.inner.forEach((line, index) => {
+            errors.push(...validateRoadLine(line, `${path}.inner[${index}]`));
+        });
+    }
+
+    if (Array.isArray(profile.outer)) {
+        profile.outer.forEach((line, index) => {
+            errors.push(...validateRoadLine(line, `${path}.outer[${index}]`));
+        });
+    }
+
+    return errors;
+}
+
+/**
  * Validate a road line object
  */
 function validateRoadLine(line, path) {
@@ -121,14 +155,14 @@ function validateRoadLine(line, path) {
     
     if (!line.color) {
         errors.push(`${path}.color is required`);
-    } else if (!['white', 'yellow', 'other'].includes(line.color)) {
-        errors.push(`${path}.color must be one of: white, yellow, other`);
+    } else if (!['white', 'yellow', 'orange', 'other'].includes(line.color)) {
+        errors.push(`${path}.color must be one of: white, yellow, orange, other`);
     }
     
     if (!line.pattern) {
         errors.push(`${path}.pattern is required`);
-    } else if (!['solid', 'dashed', 'zigzag'].includes(line.pattern)) {
-        errors.push(`${path}.pattern must be one of: solid, dashed, zigzag`);
+    } else if (!['solid', 'short_dashed', 'long_dashed', 'other'].includes(line.pattern)) {
+        errors.push(`${path}.pattern must be one of: solid, short_dashed, long_dashed, other`);
     }
     
     return errors;

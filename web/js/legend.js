@@ -173,9 +173,9 @@ function getCategoricalColor(value, fieldName) {
     }
     
     // Handle array values (like driving_side: ["left"])
-    let actualValue = value;
+    let actualValue = normalizeCategoricalValue(value, fieldName);
     if (Array.isArray(value) && value.length > 0) {
-        actualValue = value[0]; // Use the first value in the array
+        actualValue = normalizeCategoricalValue(value[0], fieldName); // Use the first value in the array
     }
     
     // Get the index of this value in the sorted list of all possible values
@@ -208,9 +208,9 @@ function getSortedValuesForField(fieldName) {
                 const value = feature.properties.geo_meta[fieldName];
                 if (value !== null && value !== undefined) {
                     if (Array.isArray(value)) {
-                        value.forEach(v => uniqueValues.add(v));
+                        value.forEach(v => uniqueValues.add(normalizeCategoricalValue(v, fieldName)));
                     } else {
-                        uniqueValues.add(value);
+                        uniqueValues.add(normalizeCategoricalValue(value, fieldName));
                     }
                 }
             }
@@ -219,6 +219,21 @@ function getSortedValuesForField(fieldName) {
     
     // Return sorted array of unique values
     return Array.from(uniqueValues).sort();
+}
+
+/**
+ * Normalize complex category values into stable string keys for legends.
+ */
+function normalizeCategoricalValue(value, fieldName) {
+    if (fieldName === 'road_lines') {
+        return formatRoadLineProfile(value);
+    }
+
+    if (typeof value === 'object' && value !== null) {
+        return JSON.stringify(value);
+    }
+
+    return value;
 }
 
 /**
@@ -267,7 +282,7 @@ function createLegend(fieldName, fieldType, possibleValues) {
         legendHTML += '<div class="legend-categorical">';
         allValues.forEach(value => {
             const color = getCategoricalColor(value, fieldName);
-            const label = formatValue(value);
+            const label = formatValue(value, fieldName);
             legendHTML += `
                 <div class="legend-item" data-value="${value}" data-field="${fieldName}" data-type="categorical">
                     <div class="legend-color" style="background-color: ${color}"></div>
@@ -368,7 +383,7 @@ function highlightLegendValue(field, value, type, highlight) {
             } else {
                 // Handle both string and array formats
                 if (Array.isArray(fieldValue)) {
-                    shouldHighlight = fieldValue.includes(value);
+                    shouldHighlight = fieldValue.some(v => normalizeCategoricalValue(v, field) === value);
                 } else {
                     // Handle boolean values - convert between string and boolean
                     if (value === 'true') {
@@ -376,7 +391,7 @@ function highlightLegendValue(field, value, type, highlight) {
                     } else if (value === 'false') {
                         shouldHighlight = (fieldValue === false || fieldValue === 'false');
                     } else {
-                        shouldHighlight = (fieldValue === value);
+                        shouldHighlight = (normalizeCategoricalValue(fieldValue, field) === value);
                     }
                 }
             }
@@ -493,7 +508,7 @@ function updateLegendSelection() {
             } else {
                 // Categorical value - handle both string and array formats
                 if (Array.isArray(fieldValue)) {
-                    isSelected = isSelected || fieldValue.includes(selectedValue);
+                    isSelected = isSelected || fieldValue.some(v => normalizeCategoricalValue(v, currentLegendField) === selectedValue);
                 } else {
                     // Handle boolean values - convert between string and boolean
                     if (selectedValue === 'true') {
@@ -501,7 +516,7 @@ function updateLegendSelection() {
                     } else if (selectedValue === 'false') {
                         isSelected = isSelected || (fieldValue === false || fieldValue === 'false');
                     } else {
-                        isSelected = isSelected || (fieldValue === selectedValue);
+                        isSelected = isSelected || (normalizeCategoricalValue(fieldValue, currentLegendField) === selectedValue);
                     }
                 }
             }
@@ -654,8 +669,12 @@ function formatFieldName(fieldName) {
 /**
  * Format value for display
  */
-function formatValue(value) {
+function formatValue(value, fieldName) {
     if (value === null || value === undefined) return 'No Data';
+
+    if (fieldName === 'road_lines') {
+        return value;
+    }
     
     if (typeof value === 'string') {
         // Special formatting for known values
@@ -679,6 +698,36 @@ function formatValue(value) {
     }
     
     return value;
+}
+
+/**
+ * Format a road line profile for legend display and matching.
+ */
+function formatRoadLineProfile(profile) {
+    if (!profile || typeof profile !== 'object') return 'No Data';
+    if (profile.type === 'none') return 'No Lines';
+
+    const parts = [];
+    if (Array.isArray(profile.outer) && profile.outer.length > 0) {
+        parts.push(`Outer ${profile.outer.map(formatRoadLineMarking).join(' + ')}`);
+    }
+    if (Array.isArray(profile.inner) && profile.inner.length > 0) {
+        parts.push(`Inner ${profile.inner.map(formatRoadLineMarking).join(' + ')}`);
+    }
+
+    return parts.length > 0 ? parts.join('; ') : 'Marked Lines';
+}
+
+function formatRoadLineMarking(line) {
+    const pattern = formatLineToken(line.pattern);
+    const number = formatLineToken(line.number);
+    const color = formatLineToken(line.color);
+    return [pattern, number, color].filter(Boolean).join(' ');
+}
+
+function formatLineToken(value) {
+    if (!value) return '';
+    return String(value).replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 }
 
 /**

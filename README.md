@@ -48,10 +48,16 @@ Each GeoJSON feature can have a `geo_meta` property with the following fields:
 {
   "driving_side": ["left", "right"],           // Array or null
   "hemisphere": ["N", "S", "E"],               // Array or null
-  "road_lines": {                              // Object or null
-    "inner": [{"number": "single", "color": "white", "pattern": "solid"}],
-    "outer": [{"number": "single", "color": "white", "pattern": "solid"}]
-  },
+  "road_lines": [                              // Array of profiles or null
+    {
+      "type": "marked",
+      "inner": [{"pattern": "solid", "number": "single", "color": "white"}],
+      "outer": [{"pattern": "long_dashed", "number": "single", "color": "yellow"}]
+    },
+    {
+      "type": "none"
+    }
+  ],
   "road_quality": ["maintained", "poor"],      // Array or null
   "has_official_coverage": true,               // Boolean or null
   "arid_lush": {"min": 1, "max": 5},          // Quintile scale or null
@@ -113,5 +119,6 @@ Schema changes automatically update the data editor interface.
 - All fields support null values for gradual data entry
 - Quintile scales use 1-5 range (1=lowest, 5=highest)
 - Arrays support multiple values per country
+- `road_lines: null` means unknown/not entered; `{"type": "none"}` means roads commonly have no visible line markings
 - Original files are never modified, only copied to geometa folder
 - Large original GeoJSON files are excluded from git (see .gitignore) 

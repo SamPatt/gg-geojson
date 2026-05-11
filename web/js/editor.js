@@ -280,11 +280,15 @@ function populateScaleInputs(name, scale) {
  * Populate road lines
  */
 function populateRoadLines(roadLines) {
-    if (roadLines.inner) {
-        roadLines.inner.forEach(line => addRoadLine('inner', line));
+    const profiles = Array.isArray(roadLines) ? roadLines : [{ type: 'marked', ...roadLines }];
+    const markedProfile = profiles.find(profile => profile && profile.type !== 'none');
+    if (!markedProfile) return;
+
+    if (markedProfile.inner) {
+        markedProfile.inner.forEach(line => addRoadLine('inner', line));
     }
-    if (roadLines.outer) {
-        roadLines.outer.forEach(line => addRoadLine('outer', line));
+    if (markedProfile.outer) {
+        markedProfile.outer.forEach(line => addRoadLine('outer', line));
     }
 }
 
@@ -342,13 +346,15 @@ function addRoadLine(type, lineData = null) {
                 <option value="">Color</option>
                 <option value="white">White</option>
                 <option value="yellow">Yellow</option>
+                <option value="orange">Orange</option>
                 <option value="other">Other</option>
             </select>
             <select name="line-${lineId}-pattern" required>
                 <option value="">Pattern</option>
                 <option value="solid">Solid</option>
-                <option value="dashed">Dashed</option>
-                <option value="zigzag">Zigzag</option>
+                <option value="short_dashed">Short Dashed</option>
+                <option value="long_dashed">Long Dashed</option>
+                <option value="other">Other</option>
             </select>
         </div>
     `;
@@ -558,10 +564,11 @@ function collectRoadLines() {
     
     if (innerLines.length === 0 && outerLines.length === 0) return null;
     
-    return {
-        inner: innerLines.length > 0 ? innerLines : [],
-        outer: outerLines.length > 0 ? outerLines : []
-    };
+    const profile = { type: 'marked' };
+    if (innerLines.length > 0) profile.inner = innerLines;
+    if (outerLines.length > 0) profile.outer = outerLines;
+
+    return [profile];
 }
 
 /**

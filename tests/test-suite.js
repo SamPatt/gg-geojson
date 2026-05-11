@@ -276,7 +276,8 @@ class GeoJSONTestSuite {
             const validData = {
                 driving_side: ["right"],
                 hemisphere: "N",
-                road_lines: {
+                road_lines: [{
+                    type: "marked",
                     inner: [{
                         number: "single",
                         color: "white",
@@ -285,9 +286,9 @@ class GeoJSONTestSuite {
                     outer: [{
                         number: "single",
                         color: "white",
-                        pattern: "solid"
+                        pattern: "long_dashed"
                     }]
-                },
+                }],
                 road_quality: ["maintained"],
                 has_official_coverage: true,
                 arid_lush: { min: 1, max: 5 },
