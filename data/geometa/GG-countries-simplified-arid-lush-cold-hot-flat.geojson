@@ -64262,7 +64262,7 @@
           "hemisphere": "N",
           "road_lines": null,
           "road_quality": null,
-          "has_official_coverage": false,
+          "has_official_coverage": true,
           "arid_lush": null,
           "cold_hot": null,
           "flat_mountainous": null,
@@ -149773,7 +149773,7 @@
           "hemisphere": "N",
           "road_lines": null,
           "road_quality": null,
-          "has_official_coverage": false,
+          "has_official_coverage": true,
           "arid_lush": {
             "min": 3,
             "max": 5
@@ -171458,7 +171458,7 @@
           "hemisphere": "E",
           "road_lines": null,
           "road_quality": null,
-          "has_official_coverage": false,
+          "has_official_coverage": true,
           "arid_lush": null,
           "cold_hot": null,
           "flat_mountainous": null,
