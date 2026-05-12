@@ -27106,7 +27106,42 @@
             "right"
           ],
           "hemisphere": "N",
-          "road_lines": null,
+          "road_lines": [
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "yellow"
+                }
+              ]
+            },
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "double",
+                  "color": "yellow"
+                }
+              ]
+            }
+          ],
           "road_quality": null,
           "has_official_coverage": true,
           "arid_lush": {
@@ -50398,7 +50433,42 @@
             "right"
           ],
           "hemisphere": "S",
-          "road_lines": null,
+          "road_lines": [
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ]
+            },
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "yellow"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "double",
+                  "color": "yellow"
+                }
+              ]
+            }
+          ],
           "road_quality": null,
           "has_official_coverage": true,
           "arid_lush": {
@@ -180690,7 +180760,23 @@
             "right"
           ],
           "hemisphere": "S",
-          "road_lines": null,
+          "road_lines": [
+            {
+              "type": "marked",
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "double",
+                  "color": "yellow"
+                },
+                {
+                  "pattern": "short_dashed",
+                  "number": "single",
+                  "color": "white"
+                }
+              ]
+            }
+          ],
           "road_quality": null,
           "has_official_coverage": true,
           "arid_lush": null,
@@ -180864,7 +180950,42 @@
             "right"
           ],
           "hemisphere": "N",
-          "road_lines": null,
+          "road_lines": [
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "solid",
+                  "number": "double",
+                  "color": "yellow"
+                }
+              ]
+            },
+            {
+              "type": "marked",
+              "outer": [
+                {
+                  "pattern": "solid",
+                  "number": "single",
+                  "color": "white"
+                }
+              ],
+              "inner": [
+                {
+                  "pattern": "long_dashed",
+                  "number": "single",
+                  "color": "yellow"
+                }
+              ]
+            }
+          ],
           "road_quality": null,
           "has_official_coverage": true,
           "arid_lush": {

@@ -83,7 +83,8 @@
 }
 
 .country-popup {
-    min-width: 200px;
+    min-width: 360px;
+    max-width: 460px;
 }
 
 .country-popup h3 {
@@ -124,6 +125,137 @@
 
 .country-popup .edit-btn:hover {
     background: #2980b9;
+}
+
+.geometa-popup-views {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ecf0f1;
+}
+
+.geometa-popup-view {
+    margin-bottom: 8px;
+}
+
+.geometa-popup-view h4 {
+    margin: 0 0 6px 0;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.road-line-profile {
+    margin-bottom: 14px;
+}
+
+.road-line-profile:last-child {
+    margin-bottom: 0;
+}
+
+.road-sample {
+    position: relative;
+    height: 185px;
+    overflow: hidden;
+    border: 1px solid #2f3640;
+    border-radius: 4px;
+    background:
+        linear-gradient(90deg, #6b737a 0 49%, rgba(255, 255, 255, 0.08) 49% 51%, #6b737a 51% 100%),
+        #596269;
+}
+
+.road-sample::before,
+.road-sample::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 32px;
+    pointer-events: none;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.road-sample::before {
+    left: 0;
+}
+
+.road-sample::after {
+    right: 0;
+}
+
+.road-sample-no-lines {
+    background:
+        linear-gradient(90deg, #6b737a 0 49%, rgba(255, 255, 255, 0.08) 49% 51%, #6b737a 51% 100%),
+        #596269;
+}
+
+.road-surface {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 16px),
+        #596269;
+}
+
+.road-edge,
+.road-center-lines {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    z-index: 3;
+}
+
+.road-edge-left {
+    left: 30px;
+}
+
+.road-edge-right {
+    right: 30px;
+}
+
+.road-center-lines {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.road-marking-group {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 5px;
+    height: 100%;
+}
+
+.road-marking {
+    display: block;
+    width: 6px;
+    height: 100%;
+    border-radius: 999px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.38);
+}
+
+.road-marking.solid {
+    background: var(--line-color);
+}
+
+.road-marking.dashed {
+    background: repeating-linear-gradient(
+        180deg,
+        var(--line-color) 0 24px,
+        transparent 24px 43px
+    );
+}
+
+.road-line-caption,
+.road-lines-empty {
+    margin-top: 4px;
+    color: #566573;
+    font-size: 12px;
+    line-height: 1.35;
 }
 
 /* Loading Overlay */

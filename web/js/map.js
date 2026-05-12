@@ -77,24 +77,14 @@ function loadGeoJSONData(geoJsonData) {
         },
         onEachFeature: function(feature, layer) {
             // Add popup
-            const countryName = getCountryName(feature);
-            const geoMeta = feature.properties.geo_meta;
-            const geoMetaText = formatGeoMetaData(geoMeta);
+            const popupContent = window.MetaPopupViews
+                ? window.MetaPopupViews.buildCountryPopup(feature)
+                : `<div class="country-popup"><h3>${getCountryName(feature)}</h3><p>${formatGeoMetaData(feature.properties.geo_meta)}</p></div>`;
             
-            const popupContent = `
-                <div class="country-popup">
-                    <h3>${countryName}</h3>
-                    <div class="geometa-info">
-                        <h4>GeoMeta Data</h4>
-                        <p>${geoMetaText}</p>
-                    </div>
-                    <button class="edit-btn" onclick="editCountry('${feature.properties.ADMIN || feature.properties.NAME || 'unknown'}')">
-                        Edit Data
-                    </button>
-                </div>
-            `;
-            
-            layer.bindPopup(popupContent);
+            layer.bindPopup(popupContent, {
+                minWidth: 360,
+                maxWidth: 460
+            });
             
             // Add click handler
             layer.on('click', function(e) {
